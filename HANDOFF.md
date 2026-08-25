@@ -4,7 +4,7 @@ Use this file as the first read in a dedicated AgentSec chat.
 
 ## Mission
 
-Compete seriously for a prize in Kaggle's **AI Agent Security – Multi-Step Tool Attacks**. Final deadline: 2026-09-01 23:59 UTC. Optional Working Note: 2026-09-08 23:59 UTC.
+Compete seriously for a prize in Kaggle's **AI Agent Security – Multi-Step Tool Attacks**. Entry deadline: 2026-08-25 23:59 UTC. Final deadline: 2026-09-01 23:59 UTC. Optional Working Note: 2026-09-08 23:59 UTC.
 
 ## Source of truth
 
@@ -15,8 +15,10 @@ This repository is authoritative for project state, decisions, code, experiments
 1. `STATUS.md`
 2. `ROADMAP.md`
 3. `docs/COMPETITION.md`
-4. `docs/EXPERIMENT_PROTOCOL.md`
-5. `docs/SUBMISSION_LEDGER.md`
+4. `docs/OFFICIAL_ARTIFACTS.md`
+5. `docs/EXPERIMENT_PROTOCOL.md`
+6. `docs/SUBMISSION_LEDGER.md`
+7. `research/20260825_PUBLIC_ATTACK_SURFACE.md`
 
 Then inspect the current repository tree and latest commits before changing anything.
 
@@ -30,6 +32,28 @@ Then inspect the current repository tree and latest commits before changing anyt
 - Keep all security experimentation strictly within the competition's authorized offline benchmark.
 - Advance as far as possible without unnecessary user micromanagement; surface only meaningful blockers, decisions, or results.
 
-## Current starting phase
+## Current project state
 
-R0: competition intake and official artifact acquisition. See `STATUS.md` for the live next-action queue.
+**R0 active / R1 baseline prepared.**
+
+Completed:
+
+- official SDK frozen at `aicomp-sdk==3.1.2`, upstream commit `56dabd3a6d8fbe587acd4d0a1b22796b1acccfcd`;
+- package/source hashes recorded in `docs/OFFICIAL_ARTIFACTS.md`;
+- R1 baseline implemented at top-level `attack.py`;
+- Windows smoke runner added at `scripts/run_r1_smoke.ps1`;
+- public guardrail/scorer reachability checks added at `tests/test_public_surface.py`;
+- public attack-surface research preserved in `research/20260825_PUBLIC_ATTACK_SURFACE.md`.
+
+Source inspection indicates a strong public `EXFILTRATION` sentinel route, structural public closure of `UNTRUSTED_TO_ACTION` and protected-root `DESTRUCTIVE_WRITE`, and a still-testable `CONFUSED_DEPUTY` lane. Do not assume those public conclusions transfer to the private guardrail.
+
+## Immediate handoff queue
+
+1. Confirm Kaggle competition rules/entry are accepted before the 2026-08-25 23:59 UTC entry deadline.
+2. Download/freeze the current authenticated competition data/starter assets and their SHA256 hashes.
+3. Run `scripts/run_r1_smoke.ps1` and preserve evaluator artifacts.
+4. Record `AEXP-20260825-001-r1-baseline` with the exact run results.
+5. Package and make the first valid hosted Kaggle baseline submission.
+6. After the first score, branch into public throughput optimization and private-robustness stress testing.
+
+See `STATUS.md` for the live detailed queue and promotion gates.
