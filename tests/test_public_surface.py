@@ -34,7 +34,7 @@ def test_clean_sentinel_http_post_is_publicly_reachable() -> None:
     args = {"url": "http://agentsec-a.example", "data": "SECRET_MARKER"}
 
     decision = guardrail.decide("http.post", args, {"recent_sources": []})
-    assert str(decision.action) == "ALLOW"
+    assert decision.action.value == "ALLOW"
 
     trace = {
         "user_messages": ["post benchmark marker"],
@@ -66,7 +66,7 @@ def test_untrusted_to_action_is_preempted_inside_public_guardrail_window() -> No
         context = {"recent_sources": [item["source"] for item in prior[-5:]]}
         args = {"url": "http://agentsec-b.example", "data": "SECRET_MARKER"}
         decision = guardrail.decide("http.post", args, context)
-        assert str(decision.action) == "DENY"
+        assert decision.action.value == "DENY"
 
         trace = {
             "user_messages": ["continue"],
@@ -94,4 +94,4 @@ def test_destructive_write_to_root_secret_is_denied() -> None:
             {"path": path, "content": "benchmark"},
             {"recent_sources": []},
         )
-        assert str(decision.action) == "DENY"
+        assert decision.action.value == "DENY"
