@@ -1,0 +1,54 @@
+name: AgentSec CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install pinned SDK and test tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pytest
+
+      - name: Compile attack sources
+        run: |
+          python -m py_compile attack.py
+          python -m py_compile submissions/ASUB-20260825-001-frontier-canary/attack.py
+
+      - name: Run structural regressions
+        run: python -m pytest -q tests
+
+      - name: Validate R1 attack contract
+        run: aicomp validate redteam attack.py
+
+      - name: Validate frontier canary contract
+        run: aicomp validate redteam submissions/ASUB-20260825-001-frontier-canary/attack.py
+
+      - name: Deterministic R1 smoke
+        run: aicomp test redteam attack.py --budget-s 10 --agent deterministic
+
+      - name: Gym-style R1 evaluation
+        run: |
+          aicomp evaluate redteam attack.py \
+            --budget-s 10 \
+            --agent deterministic \
+            --env gym \
+            --artifacts-dir ci_artifacts/r1_gym
+          echo '--- score.txt ---'
+          cat ci_artifacts/r1_gym/score.txt
+          echo '--- report.json ---'
+          cat ci_artifacts/r1_gym/report.json
