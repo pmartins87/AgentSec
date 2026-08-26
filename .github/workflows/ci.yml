@@ -37,15 +37,19 @@ jobs:
           python -m py_compile src/private_guardrail_proxy.py
           python -m py_compile src/semantic_authorization_proxy.py
           python -m py_compile src/portfolio_optimizer.py
+          python -m py_compile src/private_scenario_overlay.py
           python -m py_compile src/hosted_evidence.py
           python -m py_compile scripts/plan_portfolio.py
+          python -m py_compile scripts/plan_private_robust_portfolio.py
           python -m py_compile scripts/interpret_hosted_score.py
 
       - name: Run structural regressions
         run: python -m pytest -q tests
 
       - name: Portfolio planner smoke
-        run: python scripts/plan_portfolio.py
+        run: |
+          python scripts/plan_portfolio.py
+          python scripts/plan_private_robust_portfolio.py
 
       - name: Hosted-score interpreter smoke
         run: |
