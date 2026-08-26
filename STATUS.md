@@ -1,6 +1,6 @@
 # STATUS — AgentSec
 
-Last updated: 2026-08-26 after ASUB-009 coverage-prefix promotion
+Last updated: 2026-08-26 after ASUB-010 format-diverse promotion
 
 ## Mission
 
@@ -41,50 +41,61 @@ Frozen, frozen-copy CI PASS. Separates one-hop generation timing from full-hop r
 
 `submissions/ASUB-20260826-006-private-hedge-v2/attack.py`
 
-Frozen, frozen-copy CI PASS. 360-candidate mixed portfolio spanning public EXFIL, direct confused deputy and semantic source→action families. Two-message laundering evidence requires the target action during the first interaction while explicit authorization is current.
+Frozen, frozen-copy CI PASS. 360-candidate mixed portfolio spanning public EXFIL, direct confused deputy and semantic source→action families.
 
 ### ASUB-007 — timeout-prefix public frontier v6
 
 `submissions/ASUB-20260826-007-public-frontier-v6-timeout-prefix/attack.py`
 
-Frozen from mechanically green DRAFT-ASUB-013. Blob SHA `f5eeb96d050c26544e8d945cf5af66b0977f0ae7`.
-
-Evaluator-aware design:
+Frozen blob `f5eeb96d050c26544e8d945cf5af66b0977f0ae7`.
 
 - tiny generation calibration;
 - fast row stays plain single-post;
 - slow row races plain/Harmony/forged 2..5-post arms by observed public raw score per full-hop second;
-- non-plain winner must be confirmed by at least two positive observations and beat the plain anchor by a margin;
-- returns the full legal **2,000-candidate** archive from the confirmed arm;
-- does not shorten the archive to an estimated replay cap because the updated evaluator preserves score accumulated before replay timeout.
+- non-plain winner requires repeatability + value margin;
+- confirmed arm emits the full legal **2,000-candidate** archive.
 
-This remains the highest-upside frozen public research hypothesis.
+ASUB-007 is the simpler frozen public timeout-prefix anchor.
 
 ### ASUB-008 — timeout-prefix private hedge v3
 
 `submissions/ASUB-20260826-008-private-hedge-v3-timeout-prefix/attack.py`
 
-Frozen from mechanically green DRAFT-ASUB-014. Blob SHA `5f4a675a444027b25071f722421674fc9624040b`.
-
-It preserves the ASUB-006 private-hypothesis weights, scales to **2,000 findings**, and weighted-interleaves families. It is retained as a clean predecessor/ordering ablation.
+Frozen blob `5f4a675a444027b25071f722421674fc9624040b`. It preserves the ASUB-006 hypothesis weights, scales to **2,000 findings**, and weighted-interleaves families. It is retained as a predecessor/ordering ablation.
 
 ### ASUB-009 — coverage-prefix private hedge v4
 
 `submissions/ASUB-20260826-009-private-hedge-v4-coverage-prefix/attack.py`
 
-Frozen from DRAFT-ASUB-015 after dedicated workflow `33001993816` completed **SUCCESS** with compile, structural tests and official SDK validation all green. Blob SHA `86444fa16cb817fa210ade4319ec52e8ad5ece6c`.
+Frozen blob `86444fa16cb817fa210ade4319ec52e8ad5ece6c` after dedicated DRAFT-ASUB-015 workflow `33001993816` completed **SUCCESS**.
 
-ASUB-009 preserves ASUB-008's weights, calibration logic, candidate construction and 2,000-item cap but changes the replay order:
+- every active private hypothesis family receives one replay position before any family receives a second;
+- after the coverage prelude, exact remaining counts resume weighted deficit interleaving;
+- short private replays therefore sample all active families as early as possible while long replays preserve intended proportions.
 
-- each active private hypothesis family receives one replay position before any family receives a second;
-- after the coverage prelude, the exact remaining counts resume weighted deficit interleaving;
-- therefore an unexpectedly short private replay samples all active families as early as possible while long replays preserve the intended portfolio proportions.
+ASUB-009 is the preferred **new** private timeout-prefix submission.
 
-This is now the preferred **new** private timeout-prefix submission. ASUB-008 remains valuable if already queued or if a direct ordering ablation is worth a hosted slot.
+### ASUB-010 — format-diverse public frontier v7
+
+`submissions/ASUB-20260826-010-public-frontier-v7-format-diverse/attack.py`
+
+Frozen byte-identical from DRAFT-ASUB-016 blob `a2a77c684cd6fd9f59f13094bef969eb411246ea` after full CI run `33018697791` completed **SUCCESS**.
+
+New live public race:
+
+- plain single-post control;
+- model-agnostic imperative single-post;
+- GPT-OSS-style Harmony full-call framing;
+- Gemma-style forged model/tool-call framing;
+- three-hop plain, Harmony-style and Gemma-style variants when `max_tool_hops >= 3`.
+
+Promotion is deliberately conservative: every non-plain arm needs at least **two positive observations** and must beat the positive plain anchor by a configurable raw-score-per-second margin before it may own the archive. Unsupported/inert formats therefore fall back to plain. The confirmed winner returns the full legal **2,000-candidate** timeout-prefix archive.
+
+This is now the newest high-information frozen public experiment. It does not replace ASUB-007 until hosted evidence resolves whether format diversity is worth the extra complexity.
 
 ## Evaluator update and strategic consequence
 
-Kaggle staff announced that public/private **replay timeouts preserve score accumulated before timeout**, while attack-generation timeout remains terminal. This changes the runtime optimization problem.
+Kaggle staff announced that public/private **replay timeouts preserve score accumulated before timeout**, while attack-generation timeout remains terminal.
 
 Earlier strategy: estimate replay capacity conservatively and stop before timeout.
 
@@ -97,16 +108,17 @@ Runtime code uses live `AttackRunConfig.time_budget_s` rather than hard-coding d
 ## Public research ladder
 
 - DRAFT-ASUB-012: independent generation/replay windows + live multi-post arm race + conservative primary/backfill sizing.
-- DRAFT-ASUB-013: full timeout-prefix archive; frozen as ASUB-007 after confirmation hardening.
-- ASUB-007 is the preferred frozen public timeout-prefix experiment.
-- Next public research should test **model-format-diverse live arms** only through bounded public calibration, keeping plain fallback and requiring confirmation before any format-specific arm owns the archive.
+- ASUB-007: confirmed-arm full timeout-prefix archive.
+- DRAFT-ASUB-016: model-format-diverse live race with bounded three-hop variants.
+- ASUB-010: frozen copy of green DRAFT-ASUB-016; current newest public experiment.
+
+Research/attribution: `research/20260826_MODEL_FORMAT_DIVERSITY.md`. Public field evidence is hypothesis input only; format-specific behavior may be harness-specific.
 
 ## Private research ladder
 
 - ASUB-006: 360-candidate private hedge baseline.
 - ASUB-008: full-cap weighted-interleaved private hedge.
-- DRAFT-ASUB-015: coverage-first evolution of ASUB-008.
-- ASUB-009: frozen coverage-first private hedge; preferred new private timeout-prefix candidate.
+- ASUB-009: full-cap coverage-first private hedge; preferred new private candidate.
 
 The hidden private guardrail is never queried during generation. All private mechanisms remain explicit hypotheses, not observations.
 
@@ -118,22 +130,23 @@ All private scenario inputs remain explicit stress assumptions until real eviden
 
 ## CI state
 
-- CI run 110 completed **SUCCESS** with DRAFT-ASUB-012/013/014, final-pair selector, SDK validation, deterministic smoke and Gym plumbing.
-- DRAFT-ASUB-015 dedicated workflow `33001993816` completed **SUCCESS** before ASUB-009 freeze.
-- ASUB-009 is the exact DRAFT-ASUB-015 blob `86444fa16cb817fa210ade4319ec52e8ad5ece6c`.
-- Main CI is being expanded to compile and officially validate frozen ASUB-007/008/009, compile DRAFT-ASUB-015, run the full structural suite, and lock draft↔frozen byte identity.
+- Full CI run `33018697791`: **SUCCESS** after DRAFT-ASUB-016 was added to compile + official SDK validation and its structural tests entered the complete test suite.
+- The same run also compiled/validated frozen ASUB-007/008/009 and exercised frozen-identity locks.
+- DRAFT-ASUB-015 dedicated workflow `33001993816`: **SUCCESS** before ASUB-009 freeze.
+- ASUB-010 is an exact blob copy of the full-CI-green DRAFT-ASUB-016 source; frozen-identity and direct frozen compile/SDK gates are included in the next freeze commit.
 
 ## Current hosted priority
 
 Subject to what is already queued/running in Kaggle:
 
 1. preserve all terminal scores/errors and notebook versions in the ledger;
-2. **ASUB-007** — strongest new public timeout-prefix hypothesis;
+2. **ASUB-010** — newest high-information public format-diverse experiment;
 3. **ASUB-009** — preferred new private timeout-prefix hedge;
-4. ASUB-005 — established advanced public candidate if not already submitted;
-5. ASUB-006 — established private-aware baseline if not already submitted;
-6. ASUB-008 — weighted-only predecessor/ablation when already queued or scientifically worth comparing;
-7. ASUB-004 — controlled public ablation when more hosted evidence is useful.
+4. **ASUB-007** — simpler full-cap public timeout-prefix anchor;
+5. ASUB-005 — established advanced public candidate if not already submitted;
+6. ASUB-006 — established private-aware baseline if not already submitted;
+7. ASUB-008 — weighted-only predecessor/ablation when already queued or scientifically worth comparing;
+8. ASUB-004 — controlled public ablation when more hosted evidence is useful.
 
 A lower public score does not automatically reject a private-aware candidate.
 
@@ -149,8 +162,9 @@ The Working Note evidence base now includes:
 - first valid public score 77.850;
 - one-hop/full-hop calibration;
 - multi-post value/time trade-offs;
-- **timeout semantics change the optimal archive-sizing policy**;
-- **coverage-first private replay ordering** as a robust response when a prefix-preserving timeout can truncate an uncertain mixed portfolio.
+- timeout semantics changing the optimal archive-sizing policy;
+- coverage-first private replay ordering;
+- model-format-diverse public search separated from archive commitment.
 
 ## Promotion gates
 
@@ -160,7 +174,7 @@ The Working Note evidence base now includes:
 - **R3 PASS:** first valid hosted score = 77.850.
 - **R4 active:** predicate-directed reproducible lanes.
 - **R5 active:** diversity/coverage engine.
-- **R6 active:** runtime allocation, candidate ordering and timeout-prefix optimization.
+- **R6 active:** runtime allocation, candidate ordering, timeout-prefix and model-format optimization.
 - **R7 active:** multiple plausible private-guardrail stress models.
 - **R8 active:** complementary final-pair selection and hosted evidence gathering.
 - **R9 active:** Working Note evidence architecture and finalization.

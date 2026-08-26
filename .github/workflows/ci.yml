@@ -37,6 +37,7 @@ jobs:
           python -m py_compile submissions/ASUB-20260826-007-public-frontier-v6-timeout-prefix/attack.py
           python -m py_compile submissions/ASUB-20260826-008-private-hedge-v3-timeout-prefix/attack.py
           python -m py_compile submissions/ASUB-20260826-009-private-hedge-v4-coverage-prefix/attack.py
+          python -m py_compile submissions/ASUB-20260826-010-public-frontier-v7-format-diverse/attack.py
           python -m py_compile submissions/DRAFT-ASUB-004-robust-mix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-005-public-multipost/attack.py
           python -m py_compile submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
@@ -92,6 +93,7 @@ jobs:
           aicomp validate redteam submissions/ASUB-20260826-007-public-frontier-v6-timeout-prefix/attack.py
           aicomp validate redteam submissions/ASUB-20260826-008-private-hedge-v3-timeout-prefix/attack.py
           aicomp validate redteam submissions/ASUB-20260826-009-private-hedge-v4-coverage-prefix/attack.py
+          aicomp validate redteam submissions/ASUB-20260826-010-public-frontier-v7-format-diverse/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-004-robust-mix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-005-public-multipost/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py

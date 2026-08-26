@@ -52,48 +52,33 @@ Then inspect the current repository tree and latest commits before changing anyt
 
 - **ASUB-004** — controlled public frontier v2.
 - **ASUB-005** — paired-hop public frontier v4.
-- **ASUB-007** — public frontier v6 timeout-prefix, blob `f5eeb96d050c26544e8d945cf5af66b0977f0ae7`; confirmed-arm full 2,000-item archive.
+- **ASUB-007** — simpler public timeout-prefix anchor; blob `f5eeb96d050c26544e8d945cf5af66b0977f0ae7`.
+- **ASUB-010** — newest format-diverse public frontier; exact green DRAFT-ASUB-016 blob `a2a77c684cd6fd9f59f13094bef969eb411246ea`.
+
+ASUB-010 live-races plain, imperative, GPT-OSS-style Harmony, Gemma-style tool-call and bounded three-hop variants. A non-plain arm needs two positive observations and a raw-score-per-second margin over the positive plain anchor before it may own the 2,000-item archive. Full CI run `33018697791` passed before freeze.
 
 ### Frozen private-aware candidates
 
 - **ASUB-006** — 360-candidate private hedge v2.
-- **ASUB-008** — 2,000-candidate weighted/interleaved timeout-prefix hedge, blob `5f4a675a444027b25071f722421674fc9624040b`.
-- **ASUB-009** — preferred new private hedge v4 coverage-prefix, blob `86444fa16cb817fa210ade4319ec52e8ad5ece6c`; every active family appears before any family repeats, then weighted interleaving resumes.
+- **ASUB-008** — 2,000-candidate weighted/interleaved timeout-prefix hedge; blob `5f4a675a444027b25071f722421674fc9624040b`.
+- **ASUB-009** — preferred new private hedge v4 coverage-prefix; blob `86444fa16cb817fa210ade4319ec52e8ad5ece6c`; every active family appears before any family repeats, then weighted interleaving resumes.
 
-DRAFT-ASUB-015, the research parent of ASUB-009, passed dedicated compile + structural tests + official `aicomp validate` in workflow run `33001993816` before freeze.
-
-### Active public research
-
-**DRAFT-ASUB-016 — public frontier v7 format-diverse**
-
-`submissions/DRAFT-ASUB-016-public-frontier-v7-format-diverse/attack.py`
-
-Research question: live-select the best current public mechanism from model-agnostic plain/imperative controls, GPT-OSS-style Harmony formatting, Gemma-style tool-call formatting, and bounded three-hop variants.
-
-Promotion protections:
-
-- bounded public generation probe;
-- unsupported chain arms filtered by `max_tool_hops`;
-- non-plain arm needs at least two positive observations;
-- non-plain arm must beat the positive plain anchor in public raw-score-per-second;
-- fallback to plain if confirmation is insufficient;
-- confirmed winner emits the full 2,000-item timeout-prefix archive.
-
-Public reference and attribution are documented in `research/20260826_MODEL_FORMAT_DIVERSITY.md`. Treat model-format behavior as harness-specific evidence, not a private-transfer claim.
+DRAFT-ASUB-015, the research parent of ASUB-009, passed dedicated workflow `33001993816` before freeze.
 
 ### Core benchmark-design findings
 
 1. **Public generation/private replay asymmetry:** generation measures public model compliance/latency but cannot observe hidden private survival.
-2. **Authorization-context TOCTOU:** runtime guardrail intent can use the current `last_user`, while canonical scorer authorization is recomputed from the final user message; this motivates explicit-action + neutral-tail laundering tests.
-3. **Replay-timeout semantics:** prefix-preserving replay timeout changes the optimum from guessed conservative archive sizing toward full legal archives with value-first or coverage-first prefix ordering.
-4. **Private uncertainty:** final selection should preserve mutually conflicting private hypotheses rather than optimize only the public `OptimalGuardrail` route.
+2. **Authorization-context TOCTOU:** runtime guardrail intent can use the current `last_user`, while canonical scorer authorization is recomputed from the final user message.
+3. **Replay-timeout semantics:** prefix-preserving replay timeout shifts the optimum from guessed conservative sizing toward full legal archives with value-first or coverage-first prefix ordering.
+4. **Model-format diversity:** broad bounded live search can be separated from narrow archive commitment; unsupported format-specific arms fall back to plain.
+5. **Private uncertainty:** final selection should preserve mutually conflicting private hypotheses rather than optimize only the public route.
 
 ## Immediate handoff queue
 
-1. Check the latest main CI after DRAFT-ASUB-016; fix any compile/test/SDK-contract failure before promotion.
-2. If DRAFT-ASUB-016 is mechanically green, keep it as the next public hosted hypothesis or freeze a successor ASUB identity when a hosted slot has enough decision value.
-3. Prefer **ASUB-009** over ASUB-008 for a *new* private timeout-prefix slot; if ASUB-008 is already queued, retain it as a clean weighted-only vs coverage-first ordering ablation.
-4. As soon as any Kaggle run becomes terminal, update `docs/SUBMISSION_LEDGER.md` with notebook version, exact description, score/error, visible runtime, and interpretation.
+1. Verify the freeze-commit CI that directly compiles/SDK-validates ASUB-010 and locks its byte identity to green DRAFT-ASUB-016.
+2. As soon as any Kaggle run becomes terminal, update `docs/SUBMISSION_LEDGER.md` with notebook version, exact description, score/error, visible runtime, and interpretation.
+3. For a new public hosted slot, compare **ASUB-010** (format-diverse, highest information value) with **ASUB-007** (simpler timeout-prefix anchor) based on what is already queued.
+4. Prefer **ASUB-009** over ASUB-008 for a new private timeout-prefix slot; if ASUB-008 is already queued, retain it as a clean ordering ablation.
 5. Use `scripts/plan_final_pair.py` after enough hosted evidence exists; do not choose the final two submissions solely by public score.
 6. Continue R9 in parallel: convert confirmed findings and negative results into evidence-backed Working Note sections.
 

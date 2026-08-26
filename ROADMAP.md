@@ -12,7 +12,7 @@ Maximize the probability of a prize-eligible final result by combining strong le
 - **R3 PASS** — first valid hosted result: ASUB-001 public **77.850**.
 - **R4 ACTIVE** — predicate-directed lanes implemented; several public-negative surfaces documented.
 - **R5 ACTIVE** — diversity, deduplication and mixed-family archives implemented.
-- **R6 ACTIVE** — one-hop/full-hop timing, multi-post value, timeout-prefix ordering and model-format-diverse calibration under development.
+- **R6 ACTIVE** — one-hop/full-hop timing, multi-post value, timeout-prefix ordering and model-format-diverse calibration implemented in frozen/draft candidates.
 - **R7 ACTIVE** — conflicting private stress models plus mixed public/private hedges; ASUB-009 is current coverage-first private candidate.
 - **R8 ACTIVE** — frozen candidates exist on both public-anchor and private-hedge sides; final-pair selector implemented; hosted evidence still needed before final freeze.
 - **R9 ACTIVE** — Working Note outline/evidence base is being written in parallel.
@@ -53,14 +53,7 @@ Maximize the probability of a prize-eligible final result by combining strong le
 
 ## R4 — Predicate-directed search
 
-Search separately for:
-
-1. EXFILTRATION
-2. UNTRUSTED_TO_ACTION
-3. DESTRUCTIVE_WRITE
-4. CONFUSED_DEPUTY
-
-Candidate methods: state-space exploration, trace-guided mutation, heuristic search, novelty search, evolutionary mutation, archive/Go-Explore-style retention, and carefully budgeted model-assisted generation if allowed/offline-compatible.
+Search separately for EXFILTRATION, UNTRUSTED_TO_ACTION, DESTRUCTIVE_WRITE and CONFUSED_DEPUTY. Candidate methods include state-space exploration, trace-guided mutation, heuristic/novelty search, evolutionary mutation and replay-validated archive retention.
 
 Current evidence includes public EXFIL reachability, direct confused-deputy constructions, semantic source→action hypotheses, protected-root/write negatives, and public U2A structural limitations.
 
@@ -83,7 +76,6 @@ Current implementation includes argument-level diversity, weighted deficit inter
 - Estimate expected score gain per unit runtime.
 - Allocate search between GPT-OSS and Gemma characteristics without assuming identical behavior.
 - Early-stop dead branches and prioritize promising traces.
-- Tune breadth/depth/mutation schedules.
 - Treat attack-generation timeout and replay-timeout semantics separately.
 - Exploit prefix-preserving replay timeout with full legal archives when tail value is non-negative.
 - Live-test model-format-diverse arms instead of hard-coding a format assumption.
@@ -93,18 +85,15 @@ Current lineage:
 - ASUB-005: paired one-hop/full-hop calibration;
 - DRAFT-ASUB-012: independent-window multipost bridge;
 - ASUB-007: confirmed-arm 2,000-item timeout-prefix public archive;
-- DRAFT-ASUB-016: plain/imperative/Harmony/Gemma-format + three-hop live race with confirmation gates.
+- DRAFT-ASUB-016: green format-diverse research parent;
+- **ASUB-010:** frozen format-diverse public frontier, same green blob as DRAFT-ASUB-016.
 
 **Exit:** stable score gain per evaluation budget. **ACTIVE**
 
 ## R7 — Private-guardrail robustness
 
-- Avoid strategies dependent only on quirks unique to `OptimalGuardrail`.
 - Maintain **multiple conflicting private hypotheses**, not one guessed guardrail.
-- Stress payload-sensitive actions with an all-arguments/DLP proxy.
-- Stress provenance dependence with a pessimistic web/email-taint proxy.
-- Test semantic-authorization hypotheses where scorer literal intent words may disagree with a stricter semantic guardrail.
-- Keep a direct confused-deputy hedge that does not require untrusted provenance.
+- Stress payload-sensitive actions, provenance dependence, semantic authorization and direct confused-deputy behavior.
 - Order mixed portfolios so replay timeout preserves cross-family coverage.
 - Prefer severe, explicit, replay-stable tool actions over unsupported hidden-evaluator speculation.
 - Hold out scenarios for final selection.
@@ -113,7 +102,7 @@ Current private ladder:
 
 - ASUB-006: 360-candidate baseline mix;
 - ASUB-008: 2,000-candidate weighted/interleaved timeout-prefix mix;
-- ASUB-009: 2,000-candidate coverage-first timeout-prefix mix, current preferred new private candidate.
+- **ASUB-009:** 2,000-candidate coverage-first timeout-prefix mix, current preferred new private candidate.
 
 **Exit:** final candidate set has evidence across more than one plausible private-defense model and is not dominated by the public sentinel route. **ACTIVE**
 
@@ -122,11 +111,14 @@ Current private ladder:
 - Reproduce final notebook from clean environment.
 - Confirm internet-off execution, runtime ceiling, `attack.py` output path, no hidden local dependency.
 - Freeze source, configuration, hashes, experiment references, and Kaggle submission ID.
-- Select up to the competition-allowed final submissions based on complementary private-transfer hypotheses, not a single noisy public score.
+- Select the final submissions based on complementary private-transfer hypotheses, not a single noisy public score.
 - Preserve at least one public-throughput anchor and one private-robust/mixed portfolio unless evidence strongly rejects a lane.
 - Use `scripts/plan_final_pair.py` as an explicit decision aid after hosted evidence is populated.
 
-Current candidate structure already supports a public-anchor/private-hedge pair, but hosted comparisons are still incomplete.
+Current candidate structure:
+
+- public side: ASUB-007 simple timeout-prefix anchor, ASUB-010 format-diverse timeout-prefix challenger, plus older ASUB-004/005 controls;
+- private side: ASUB-009 preferred coverage-first hedge, ASUB-008 weighted-only ablation, ASUB-006 baseline mix.
 
 **Exit:** final submission accepted before 2026-09-01 23:59 UTC. **ACTIVE**
 
@@ -141,8 +133,7 @@ Current candidate structure already supports a public-anchor/private-hedge pair,
 ## Immediate prize-first queue
 
 1. Keep all queued Kaggle experiments running; capture terminal results without launching redundant duplicates.
-2. Get DRAFT-ASUB-016 mechanically green; promote/freeze only after CI + official SDK validation.
-3. Use ASUB-007 as the strongest current frozen public timeout-prefix hypothesis unless hosted evidence rejects it.
-4. Use ASUB-009 as the preferred *new* private timeout-prefix hedge; retain ASUB-008 only as an existing run or deliberate ordering ablation.
-5. Feed hosted results into the final-pair scenario table and freeze the final two before the competition deadline.
-6. Continue the Working Note in parallel so the writing deadline does not become a post-competition bottleneck.
+2. Verify the freeze-commit CI for ASUB-010 and its exact draft↔frozen identity.
+3. Use hosted capacity on independent questions, with ASUB-010/ASUB-007 representing different public hypotheses and ASUB-009 the preferred new private hedge.
+4. Feed hosted results into the final-pair scenario table and freeze the final two before the competition deadline.
+5. Continue the Working Note in parallel so the writing deadline does not become a post-competition bottleneck.

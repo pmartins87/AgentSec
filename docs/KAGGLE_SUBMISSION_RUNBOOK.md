@@ -12,16 +12,19 @@ The notebook wiring that produced the valid ASUB-001 score is reusable. Each new
 
 Use the live Kaggle queue/results to decide exact ordering. The current independent candidates are:
 
-1. `ASUB-20260826-007-public-frontier-v6-timeout-prefix` — next-generation public experiment adapted to prefix-preserving replay timeouts;
+1. `ASUB-20260826-010-public-frontier-v7-format-diverse` — newest high-information public experiment: live race across model-agnostic, Harmony-style, Gemma-style and bounded three-hop arms with confirmation gates;
 2. `ASUB-20260826-009-private-hedge-v4-coverage-prefix` — preferred next-generation private hedge; full cap plus coverage-first prefix;
-3. `ASUB-20260826-005-public-frontier-v4-paired-hops` — established advanced public frontier;
-4. `ASUB-20260826-006-private-hedge-v2` — established private-aware mixed hedge;
-5. `ASUB-20260826-008-private-hedge-v3-timeout-prefix` — useful predecessor/ablation for ASUB-009 if it is already queued or if a direct ordering ablation is worth a slot;
-6. `ASUB-20260826-004-public-frontier-v2` — lower-complexity controlled public ablation.
+3. `ASUB-20260826-007-public-frontier-v6-timeout-prefix` — simpler confirmed-arm public timeout-prefix anchor;
+4. `ASUB-20260826-005-public-frontier-v4-paired-hops` — established advanced public frontier;
+5. `ASUB-20260826-006-private-hedge-v2` — established private-aware mixed hedge;
+6. `ASUB-20260826-008-private-hedge-v3-timeout-prefix` — predecessor/ordering ablation for ASUB-009;
+7. `ASUB-20260826-004-public-frontier-v2` — lower-complexity controlled public ablation.
 
 Do not submit an additional ASUB-001 duplicate. Its existing byte-identical replicate can finish in parallel and is not a blocker.
 
 ASUB-009 supersedes ASUB-008 for a *new* private timeout-prefix slot because it preserves the same hypothesis weights and calibration logic while guaranteeing one appearance of every active family before any family receives a second replay position. If ASUB-008 is already queued, preserve it as a clean ordering ablation rather than cancelling or duplicating it.
+
+ASUB-010 and ASUB-007 answer different public questions. ASUB-007 is the simpler timeout-prefix anchor; ASUB-010 tests whether bounded live format diversity can select a materially faster/higher-value mechanism on each target model without hard-coding model identity. Keep both frozen until hosted evidence resolves the trade-off.
 
 ## Frozen sources
 
@@ -65,6 +68,14 @@ Upload filename: `ASUB-20260826-009-private-hedge-v4-coverage-prefix_attack.py`
 Private Dataset: `agentsec-asub009`  
 Submission description: `ASUB-20260826-009 private hedge v4 coverage prefix`
 
+### ASUB-010
+
+Repository source: `submissions/ASUB-20260826-010-public-frontier-v7-format-diverse/attack.py`  
+Git blob SHA: `a2a77c684cd6fd9f59f13094bef969eb411246ea`  
+Upload filename: `ASUB-20260826-010-public-frontier-v7-format-diverse_attack.py`  
+Private Dataset: `agentsec-asub010`  
+Submission description: `ASUB-20260826-010 public frontier v7 format diverse`
+
 ## Reusable notebook wrapper
 
 Reuse the notebook that produced the successful Version 4 ASUB-001 submission. Keep Internet **OFF**.
@@ -100,8 +111,6 @@ print("Python syntax: OK")
 _ = runpy.run_path(str(destination), run_name="__main__")
 ```
 
-Assigning the `runpy.run_path` result to `_` suppresses the giant globals dictionary seen in the earlier interactive run.
-
 Exact filename literals:
 
 ```python
@@ -119,6 +128,9 @@ filename = "ASUB-20260826-008-private-hedge-v3-timeout-prefix_attack.py"
 
 # ASUB-009
 filename = "ASUB-20260826-009-private-hedge-v4-coverage-prefix_attack.py"
+
+# ASUB-010
+filename = "ASUB-20260826-010-public-frontier-v7-format-diverse_attack.py"
 ```
 
 ## Kaggle UI sequence
