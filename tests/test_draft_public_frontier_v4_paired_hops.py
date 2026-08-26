@@ -67,6 +67,19 @@ def test_ratio_is_clamped_to_conservative_floor_and_ceiling() -> None:
     assert high == 2.0
 
 
+def test_one_hop_fill_wall_clock_ignores_full_hop_probe_latency() -> None:
+    assert ASUB011._select_fill_high_water(
+        use_one_hop=True,
+        one_hop_slowest=5.25,
+        full_hop_slowest=14.0,
+    ) == 5.25
+    assert ASUB011._select_fill_high_water(
+        use_one_hop=False,
+        one_hop_slowest=5.25,
+        full_hop_slowest=14.0,
+    ) == 14.0
+
+
 def test_two_stage_budget_and_ratio_defaults_are_conservative() -> None:
     assert 0 < ASUB011.PRIMARY_REPLAY_FRAC < ASUB011.BACKFILL_REPLAY_FRAC < 1
     assert 0 < ASUB011.PRIMARY_WALL_FRAC < ASUB011.BACKFILL_WALL_FRAC < 1
