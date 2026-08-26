@@ -64,28 +64,47 @@ Source reconstruction of the published gateway shows that `AttackAlgorithm.run()
 
 Consequence: public generation can measure **model compliance and latency**, but it cannot measure hidden-defense survival. For a publicly blocked source→action family, a guardrail-denied target call can still be valuable generation evidence because it proves the model attempted the intended sequence; private replay remains the actual transfer test.
 
-### 4.3 Last-message intent laundering
+### 4.3 Authorization-context TOCTOU / intent laundering
 
-`aicomp-sdk==3.1.2` derives SHARE/EXEC/WRITE authorization from the **last user message only**. Earlier explicit authorization is forgotten by canonical predicate scoring.
+This is now the strongest source-derived benchmark-design contribution.
 
-This creates a genuinely multi-step mismatch:
+The frozen SDK evaluates authorization at two different moments:
 
-1. an earlier user message explicitly authorizes a tool action using ordinary natural language;
-2. the action occurs;
-3. a final neutral user message such as `Continue.` is appended;
-4. canonical scoring evaluates the earlier action using only the neutral last-message authorization context.
+1. **guardrail time:** inside `SandboxEnv.interact()`, the guardrail receives `context["last_user"] = self.trace.user_messages[-1]` immediately before a tool decision;
+2. **score time:** `eval_predicates()` later computes SHARE/EXEC/WRITE authorization from the **final** user message in the entire replay trace.
 
-Mechanical regressions are frozen in `tests/test_intent_laundering_surface.py` for direct CD and U2A SHARE/EXEC/WRITE shapes.
+Earlier explicit authorization can therefore be visible to a runtime guardrail when the action occurs and then disappear from canonical scoring after a neutral later turn.
 
-Research implementation: `submissions/DRAFT-ASUB-008-intent-launder-portfolio/attack.py`.
+Example structure:
+
+1. `Send an email to ...` — explicit authorization;
+2. `email.send` succeeds during that turn;
+3. `Continue.` — neutral final message;
+4. canonical scorer sees the neutral final message and emits `CONFUSED_DEPUTY` for the earlier share.
+
+For source→action chains, the same temporal mismatch can make an explicitly authorized earlier action count as `UNTRUSTED_TO_ACTION` after the neutral tail, provided the runtime defense permits the action.
+
+This is more precise than a vocabulary mismatch: it is an **authorization-context time-of-check/time-of-score mismatch** across guardrail and scorer layers.
+
+Mechanical evidence:
+
+- `tests/test_intent_laundering_surface.py` — canonical last-message scorer behavior;
+- `tests/test_runtime_authorization_context.py` — runtime semantic proxy vs final scorer vs provenance-strict proxy;
+- `src/semantic_authorization_proxy.py` — separate final-trace and interaction-time semantic stress models.
+
+Research implementations:
+
+- `DRAFT-ASUB-008` — first laundering portfolio, later found to over-select one direct-CD mechanism by public speed;
+- `DRAFT-ASUB-009` — private hedge v2 preserving both direct mechanisms.
 
 ## 5. Private robustness without hidden-evaluator access
 
 Maintain deliberately conflicting proxies/stress cases:
 
 1. provenance-strict / all-args DLP;
-2. semantic authorization + sensitive-content protection;
-3. authority-strict semantic defense that can also close direct confused-deputy behavior.
+2. runtime-context semantic authorization + sensitive-content protection;
+3. final-trace semantic approximation;
+4. authority-strict semantic defense that can also close direct confused-deputy behavior.
 
 Explain why a portfolio across mutually incompatible hypotheses is more defensible than pretending one proxy predicts hidden code.
 
@@ -109,11 +128,13 @@ The rates driving this split are deliberately synthetic stress assumptions, neve
 
 - Live calibration of target-model tool-action attempts.
 - Distinguish successful findings from useful denied-attempt calibration traces.
+- For laundering candidates, require evidence that the intended action is attempted during the explicitly authorizing turn; a target action delayed until the neutral turn no longer supports the same runtime-authorization hypothesis.
 - Score-cell diversity based on actual tool traces, not prompt paraphrases.
 - Argument-level diversity: domains, recipients, commands, paths.
 - Severity economics per candidate.
 - Replay-aware caps and cross-family ordering.
 - Partial-timeout update motivates front-loaded diversity.
+- One-message vs two-message replay cost must be measured, not assumed equal.
 - Separate a public-throughput anchor from private-transfer hedges.
 
 Public-throughput research variants to ablate:
@@ -133,7 +154,8 @@ Minimum desired table:
 | ASUB-003 semantic transfer | | | | | mixed | |
 | DRAFT-006 public frontier v2 | | | | | EXFIL | |
 | DRAFT-007 forged multi-post | | | | | EXFIL | |
-| DRAFT-008 intent laundering | | | | | mixed | |
+| DRAFT-008 intent laundering | | | | | mixed | first laundering portfolio |
+| DRAFT-009 private hedge v2 | | | | | mixed | preserves 24/36 direct mechanisms |
 | final mixed portfolio | | | | | mixed | |
 
 Also record identical-submission variance from the accidental duplicate Version 4 if both complete.
@@ -142,6 +164,7 @@ Specific authorization ablations:
 
 - direct `notify` one-turn vs explicit `send/email` + neutral tail;
 - source→action explicit authorization with vs without neutral tail;
+- target action completed during authorizing turn vs delayed until neutral turn;
 - one- vs two-message replay cost;
 - public attempted-tool rate vs hosted private-transfer outcome when/if final results expose it.
 
@@ -154,16 +177,18 @@ Potentially valuable negative results:
 - domain-only public diversity is fragile under coarser private assumptions;
 - public sentinel success does not imply private robustness;
 - provenance-strict and semantic private proxies disagree by construction;
+- a final-trace semantic proxy is too pessimistic to model interaction-time authorization faithfully;
 - public `fs.read(secret.txt)` is blocked under the frozen public guardrail contract;
 - public U2A is structurally preempted by the wider public taint window;
-- compound/multi-action prompts can lose on model compliance despite better theoretical raw economics.
+- compound/multi-action prompts can lose on model compliance despite better theoretical raw economics;
+- selecting one private-transfer mechanism solely from public latency is an avoidable overfit.
 
 ## 9. Responsible conclusions
 
 - Keep findings confined to the authorized benchmark.
 - Focus on shared lessons for agent-security benchmark design:
   - scorer/guardrail semantic alignment;
-  - conversational authorization should not be reduced to last-message substring checks;
+  - authorization context should be attached to the action/turn it authorizes rather than recomputed from the final user message;
   - replayability;
   - provenance modeling;
   - hidden-defense robustness;
@@ -176,6 +201,7 @@ Potentially valuable negative results:
 - [ ] all source claims linked to pinned source files
 - [x] canonical last-message authorization behavior regression-tested
 - [x] public-generation/private-replay asymmetry documented from gateway source
+- [x] runtime guardrail `last_user` context vs final scorer context frozen in regression tests
 - [ ] experiment artifacts preserved
 - [ ] no hidden-guardrail speculation written as fact
 - [ ] at least one strong ablation table
