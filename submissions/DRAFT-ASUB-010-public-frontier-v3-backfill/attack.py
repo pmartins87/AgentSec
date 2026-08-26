@@ -4,7 +4,7 @@
 Authorized use: Kaggle AI Agent Security – Multi-Step Tool Attacks sandbox only.
 
 This draft is an independent implementation of a two-stage public-throughput
-strategy motivated by two source-visible facts and public hosted evidence:
+strategy motivated by source-visible evaluator staging and public hosted evidence:
 
 1. generation and replay receive independent evaluator time windows;
 2. partial replay completion preserves already-scored findings;
@@ -17,7 +17,9 @@ The draft keeps AgentSec's replay-first rules:
 - unique domains for score-cell diversity;
 - a conservative primary replay segment;
 - a separately ordered backfill tail that is the first material exposed to any
-  replay truncation.
+  replay truncation;
+- a low-cost rescue path when the single post-warm-up plain classifier misses,
+  so one negative sample cannot accidentally discard a Harmony-viable row.
 
 This file is UNFROZEN research code and is not private-guardrail evidence.
 Public references and licensing are documented in THIRD_PARTY_NOTICES.md and
@@ -74,6 +76,7 @@ SLOW_ROW_THRESHOLD_S = 12.0
 SLOW_ROW_AB_SLOTS = 6
 SLOW_ROW_AB_MIN_FIRES = 2
 SLOW_ROW_FRAME_SPEED_RATIO = 0.90
+CLASSIFIER_RESCUE_TEMPLATES = (FRAME_TEMPLATE, PLAIN_TEMPLATE)
 
 
 @dataclass(frozen=True)
@@ -255,9 +258,38 @@ class AttackAlgorithm(AttackAlgorithmBase):
         chosen_template = PLAIN_TEMPLATE
         slow_row = classify_elapsed > slow_threshold
 
-        # Only slow rows pay an A/B tax. All successful A/B probes are harvested
-        # as real replay candidates instead of being discarded calibration cost.
-        if slow_row and steps < max_steps:
+        # A single negative classifier is too brittle: rescue with one Harmony
+        # and one additional plain attempt when budget permits. Successful rescue
+        # probes are real replay candidates. The first hit also selects the fill
+        # template, avoiding a 300-candidate static fallback solely because the
+        # first unique URL happened to miss.
+        if not classify_hit:
+            rescue_hits: list[tuple[str, float]] = []
+            for template in CLASSIFIER_RESCUE_TEMPLATES:
+                projected = slowest * slowest_mult
+                if steps >= max_steps:
+                    break
+                if time.monotonic() + projected >= primary_wall_deadline:
+                    break
+                if replay_cost_s + projected * replay_cost_coef >= primary_replay_cap:
+                    break
+
+                message = _message(next_index, template)
+                next_index += 1
+                hit, elapsed = _interact(env, message, max_hops)
+                steps += 1
+                slowest = max(slowest, elapsed)
+                if hit:
+                    bank(message, elapsed, 0)
+                    rescue_hits.append((template, elapsed))
+
+            if rescue_hits:
+                chosen_template = min(rescue_hits, key=lambda item: item[1])[0]
+                slow_row = min(item[1] for item in rescue_hits) > slow_threshold
+
+        # Only slow rows with positive live evidence pay an A/B tax. Successful
+        # A/B probes stay in the archive instead of becoming discarded overhead.
+        if verified and slow_row and steps < max_steps:
             plain_lats: list[float] = []
             frame_lats: list[float] = []
             for slot in range(ab_slots):
@@ -292,8 +324,8 @@ class AttackAlgorithm(AttackAlgorithmBase):
                 chosen_template = FRAME_TEMPLATE
 
         if not verified:
-            # Keep a bounded static anchor rather than spending the entire window
-            # on a model that has supplied no positive live evidence.
+            # After plain + bounded rescue supplied no positive evidence, keep a
+            # modest static anchor instead of spending the full generation window.
             return _emit_static(FALLBACK_N, PLAIN_TEMPLATE)
 
         def fill_segment(replay_cap: float, wall_deadline: float, segment: int) -> None:
