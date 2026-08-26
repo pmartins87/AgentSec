@@ -12,7 +12,7 @@ Record every Kaggle submission here. Never reuse a vague description such as “
 
 - **R3 is closed:** ASUB-001-B produced the first valid hosted public score, **77.850**.
 - The pending duplicate is useful variance evidence but is **not a blocker** for independent experiments.
-- `77.850` remains below visible public opportunity around the low 90s, so stronger public-throughput experiments have material decision value.
+- `77.850` remains materially below strong public post-refresh results, so stronger public-throughput experiments retain decision value.
 - Daily hosted slots are experimental capacity, not an asset to hoard. See `docs/SUBMISSION_STRATEGY.md`.
 - A mechanically ready, non-redundant candidate should be submitted when its outcome changes final selection or the next development decision.
 
@@ -28,7 +28,8 @@ A candidate appearing here is **not recorded as actually submitted** until the K
 | ASUB-005 | paired-hop public frontier v4 | frozen, frozen-copy CI PASS | established advanced public frontier |
 | ASUB-006 | private-aware mixed hedge v2 | frozen, frozen-copy CI PASS | established private-aware final hedge |
 | ASUB-007 | public frontier v6 timeout-prefix | **frozen from green DRAFT-ASUB-013**, blob `f5eeb96d050c26544e8d945cf5af66b0977f0ae7` | high-upside public experiment under current replay-timeout semantics |
-| ASUB-008 | private hedge v3 timeout-prefix | **frozen from green DRAFT-ASUB-014**, blob `5f4a675a444027b25071f722421674fc9624040b` | full-cap interleaved private hedge under current replay-timeout semantics |
+| ASUB-008 | private hedge v3 timeout-prefix | **frozen from green DRAFT-ASUB-014**, blob `5f4a675a444027b25071f722421674fc9624040b` | full-cap weighted/interleaved private hedge; useful predecessor/ordering ablation |
+| ASUB-009 | private hedge v4 coverage-prefix | **frozen from dedicated-workflow-green DRAFT-ASUB-015**, blob `86444fa16cb817fa210ade4319ec52e8ad5ece6c` | preferred new private timeout-prefix hedge: every active family appears before any family repeats |
 | DRAFT-ASUB-010 | public frontier v3 backfill | mechanically green | lower-complexity alternative if aggressive frontier is unstable |
 | DRAFT-ASUB-012 | independent-window multipost frontier | mechanically green | bridge experiment; superseded in upside by ASUB-007 |
 
@@ -46,16 +47,16 @@ This does not reveal the individual GPT-OSS/Gemma split or private-guardrail sur
 
 ## Public opportunity ladder
 
-Public competition evidence has reported scores around `91`, corresponding to roughly `1,011–1,015` equivalent public EXFIL findings per row. Relative to ASUB-001-B, the visible gap is roughly **146–150 findings per row**.
+Recent public evidence after the evaluator refresh is clustered in the high 80s. Treat leaderboard examples as telemetry rather than a stable target because the evaluation harness and public field can change.
 
-The public candidate ladder now tests four distinct runtime ideas:
+The public candidate ladder tests four distinct runtime ideas:
 
 1. **ASUB-004:** compact prompt + fixed plain/Harmony race + conservative cumulative replay sizing;
 2. **ASUB-005:** live one-hop/full-hop timing calibration;
 3. **DRAFT-ASUB-012:** independent generation/replay windows + multipost arm race + primary/backfill sizing;
 4. **ASUB-007:** timeout-prefix policy — confirm the best public arm, then return the full legal 2,000-candidate archive because replay timeout preserves accumulated prefix score.
 
-ASUB-007 deliberately keeps fast rows on plain single-post to avoid known Gemma Harmony-format risk. On slow rows, non-plain arms must earn two positive observations and a value/time margin over the plain anchor before they can own the 2,000-item archive.
+ASUB-007 deliberately keeps fast rows on plain single-post to avoid format-specific overfit. On slow rows, non-plain arms must earn two positive observations and a value/time margin over the plain anchor before they can own the 2,000-item archive.
 
 ## Private hedge ladder
 
@@ -75,22 +76,31 @@ Two-message candidates only count calibration evidence when the intended target 
 
 ### ASUB-008
 
-ASUB-008 preserves the same private-hypothesis proportions but scales to the legal **2,000 findings** and interleaves families. It is motivated by the updated evaluator rule that public/private replay timeouts preserve accumulated prefix score. The hidden private guardrail remains unknown; the extra archive depth is uncertainty coverage, not evidence that every family survives privately.
+ASUB-008 preserves the same private-hypothesis proportions but scales to the legal **2,000 findings** and weighted-interleaves families. It is motivated by the updated evaluator rule that public/private replay timeouts preserve accumulated prefix score. The hidden private guardrail remains unknown; the extra archive depth is uncertainty coverage, not evidence that every family survives privately.
+
+### ASUB-009
+
+ASUB-009 keeps ASUB-008's weights, public calibration logic, total count and candidate construction. It changes only replay ordering: the prefix begins with one candidate from every active family before weighted deficit interleaving resumes for the remaining archive.
+
+This makes the earliest replay prefix a deliberate hypothesis-coverage sample. It is strictly preferred over ASUB-008 for a **new** private timeout-prefix slot when short-prefix robustness matters. If ASUB-008 is already queued, retain it as a clean ablation of weighted-only ordering versus coverage-first ordering.
+
+Dedicated DRAFT-ASUB-015 workflow `33001993816` completed PASS before freeze. Frozen blob identity is `86444fa16cb817fa210ade4319ec52e8ad5ece6c`.
 
 ## Final-pair planning
 
-The project now includes `src/final_pair_selector.py` plus `scripts/plan_final_pair.py`. The final two submissions are evaluated as a complementary pair under explicit stress scenarios: minimize worst-case regret, then maximize worst-case and weighted-mean pair performance. Scenario inputs remain assumptions until replaced by evidence.
+The project includes `src/final_pair_selector.py` plus `scripts/plan_final_pair.py`. The final two submissions are evaluated as a complementary pair under explicit stress scenarios: minimize worst-case regret, then maximize worst-case and weighted-mean pair performance. Scenario inputs remain assumptions until replaced by evidence.
 
 ## Current hosted sequence
 
 Subject to what is already queued or submitted in Kaggle:
 
 1. preserve all terminal results and exact notebook versions;
-2. **ASUB-005** — established advanced public experiment;
-3. **ASUB-006** — established private-aware hedge;
-4. **ASUB-007** — next public experiment with the strongest new evaluator-driven hypothesis;
-5. **ASUB-008** — next private-aware experiment adapted to prefix-preserving timeout;
-6. **ASUB-004** — controlled public ablation when another comparison has greater value than waiting.
+2. **ASUB-007** — strongest new public timeout-prefix hypothesis;
+3. **ASUB-009** — preferred new private timeout-prefix hedge with coverage-first prefix;
+4. **ASUB-005** — established advanced public experiment when not already submitted;
+5. **ASUB-006** — established private-aware baseline when not already submitted;
+6. **ASUB-008** — predecessor/ordering ablation only when already queued or when the direct ordering comparison has enough information value;
+7. **ASUB-004** — controlled public ablation when another comparison has greater value than waiting.
 
 Exact Kaggle UI steps, filenames and descriptions are in `docs/KAGGLE_SUBMISSION_RUNBOOK.md`.
 
@@ -99,7 +109,7 @@ Exact Kaggle UI steps, filenames and descriptions are in `docs/KAGGLE_SUBMISSION
 For public-only frontier candidates:
 
 - `<70`: regression or severe underfill; diagnose immediately;
-- `70–85`: competitive but below visible public opportunity frontier;
+- `70–85`: competitive but below strong current public evidence;
 - `>=85`: strong public anchor; shift more development weight toward private robustness;
 - error/blank: mechanics/infrastructure diagnosis first.
 

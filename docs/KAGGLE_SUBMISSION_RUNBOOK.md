@@ -12,13 +12,16 @@ The notebook wiring that produced the valid ASUB-001 score is reusable. Each new
 
 Use the live Kaggle queue/results to decide exact ordering. The current independent candidates are:
 
-1. `ASUB-20260826-005-public-frontier-v4-paired-hops` — established advanced public frontier;
-2. `ASUB-20260826-006-private-hedge-v2` — established private-aware mixed hedge;
-3. `ASUB-20260826-007-public-frontier-v6-timeout-prefix` — next-generation public experiment adapted to prefix-preserving replay timeouts;
-4. `ASUB-20260826-008-private-hedge-v3-timeout-prefix` — next-generation private hedge scaled/interleaved to the full replay cap;
-5. `ASUB-20260826-004-public-frontier-v2` — lower-complexity controlled public ablation when another hosted comparison is useful.
+1. `ASUB-20260826-007-public-frontier-v6-timeout-prefix` — next-generation public experiment adapted to prefix-preserving replay timeouts;
+2. `ASUB-20260826-009-private-hedge-v4-coverage-prefix` — preferred next-generation private hedge; full cap plus coverage-first prefix;
+3. `ASUB-20260826-005-public-frontier-v4-paired-hops` — established advanced public frontier;
+4. `ASUB-20260826-006-private-hedge-v2` — established private-aware mixed hedge;
+5. `ASUB-20260826-008-private-hedge-v3-timeout-prefix` — useful predecessor/ablation for ASUB-009 if it is already queued or if a direct ordering ablation is worth a slot;
+6. `ASUB-20260826-004-public-frontier-v2` — lower-complexity controlled public ablation.
 
 Do not submit an additional ASUB-001 duplicate. Its existing byte-identical replicate can finish in parallel and is not a blocker.
+
+ASUB-009 supersedes ASUB-008 for a *new* private timeout-prefix slot because it preserves the same hypothesis weights and calibration logic while guaranteeing one appearance of every active family before any family receives a second replay position. If ASUB-008 is already queued, preserve it as a clean ordering ablation rather than cancelling or duplicating it.
 
 ## Frozen sources
 
@@ -53,6 +56,14 @@ Git blob SHA: `5f4a675a444027b25071f722421674fc9624040b`
 Upload filename: `ASUB-20260826-008-private-hedge-v3-timeout-prefix_attack.py`  
 Private Dataset: `agentsec-asub008`  
 Submission description: `ASUB-20260826-008 private hedge v3 timeout prefix`
+
+### ASUB-009
+
+Repository source: `submissions/ASUB-20260826-009-private-hedge-v4-coverage-prefix/attack.py`  
+Git blob SHA: `86444fa16cb817fa210ade4319ec52e8ad5ece6c`  
+Upload filename: `ASUB-20260826-009-private-hedge-v4-coverage-prefix_attack.py`  
+Private Dataset: `agentsec-asub009`  
+Submission description: `ASUB-20260826-009 private hedge v4 coverage prefix`
 
 ## Reusable notebook wrapper
 
@@ -105,6 +116,9 @@ filename = "ASUB-20260826-007-public-frontier-v6-timeout-prefix_attack.py"
 
 # ASUB-008
 filename = "ASUB-20260826-008-private-hedge-v3-timeout-prefix_attack.py"
+
+# ASUB-009
+filename = "ASUB-20260826-009-private-hedge-v4-coverage-prefix_attack.py"
 ```
 
 ## Kaggle UI sequence

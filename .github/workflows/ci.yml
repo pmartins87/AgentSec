@@ -34,6 +34,9 @@ jobs:
           python -m py_compile submissions/ASUB-20260826-004-public-frontier-v2/attack.py
           python -m py_compile submissions/ASUB-20260826-005-public-frontier-v4-paired-hops/attack.py
           python -m py_compile submissions/ASUB-20260826-006-private-hedge-v2/attack.py
+          python -m py_compile submissions/ASUB-20260826-007-public-frontier-v6-timeout-prefix/attack.py
+          python -m py_compile submissions/ASUB-20260826-008-private-hedge-v3-timeout-prefix/attack.py
+          python -m py_compile submissions/ASUB-20260826-009-private-hedge-v4-coverage-prefix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-004-robust-mix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-005-public-multipost/attack.py
           python -m py_compile submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
@@ -45,6 +48,7 @@ jobs:
           python -m py_compile submissions/DRAFT-ASUB-012-public-frontier-v5-multipost-independent/attack.py
           python -m py_compile submissions/DRAFT-ASUB-013-public-frontier-v6-timeout-prefix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-014-private-hedge-v3-timeout-prefix/attack.py
+          python -m py_compile submissions/DRAFT-ASUB-015-private-hedge-v4-coverage-prefix/attack.py
           python -m py_compile src/private_guardrail_proxy.py
           python -m py_compile src/semantic_authorization_proxy.py
           python -m py_compile src/portfolio_optimizer.py
@@ -56,6 +60,7 @@ jobs:
           python -m py_compile scripts/plan_private_robust_portfolio.py
           python -m py_compile scripts/plan_direct_cd_split.py
           python -m py_compile scripts/interpret_hosted_score.py
+          python -m py_compile scripts/plan_final_pair.py
 
       - name: Run structural regressions
         run: python -m pytest -q tests
@@ -83,6 +88,9 @@ jobs:
           aicomp validate redteam submissions/ASUB-20260826-004-public-frontier-v2/attack.py
           aicomp validate redteam submissions/ASUB-20260826-005-public-frontier-v4-paired-hops/attack.py
           aicomp validate redteam submissions/ASUB-20260826-006-private-hedge-v2/attack.py
+          aicomp validate redteam submissions/ASUB-20260826-007-public-frontier-v6-timeout-prefix/attack.py
+          aicomp validate redteam submissions/ASUB-20260826-008-private-hedge-v3-timeout-prefix/attack.py
+          aicomp validate redteam submissions/ASUB-20260826-009-private-hedge-v4-coverage-prefix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-004-robust-mix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-005-public-multipost/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
@@ -94,6 +102,7 @@ jobs:
           aicomp validate redteam submissions/DRAFT-ASUB-012-public-frontier-v5-multipost-independent/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-013-public-frontier-v6-timeout-prefix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-014-private-hedge-v3-timeout-prefix/attack.py
+          aicomp validate redteam submissions/DRAFT-ASUB-015-private-hedge-v4-coverage-prefix/attack.py
 
       - name: Deterministic R1 smoke
         run: aicomp test redteam attack.py --budget-s 10 --agent deterministic
