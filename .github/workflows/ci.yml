@@ -24,7 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pytest
 
-      - name: Compile attack sources
+      - name: Compile attack and planning sources
         run: |
           python -m py_compile attack.py
           python -m py_compile submissions/ASUB-20260825-001-frontier-canary/attack.py
@@ -32,9 +32,14 @@ jobs:
           python -m py_compile submissions/ASUB-20260825-003-semantic-intent-transfer/attack.py
           python -m py_compile src/private_guardrail_proxy.py
           python -m py_compile src/semantic_authorization_proxy.py
+          python -m py_compile src/portfolio_optimizer.py
+          python -m py_compile scripts/plan_portfolio.py
 
       - name: Run structural regressions
         run: python -m pytest -q tests
+
+      - name: Portfolio planner smoke
+        run: python scripts/plan_portfolio.py
 
       - name: Validate R1 attack contract
         run: aicomp validate redteam attack.py
