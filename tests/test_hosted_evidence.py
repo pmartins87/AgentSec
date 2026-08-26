@@ -7,44 +7,59 @@ from src.hosted_evidence import (
     ASUB002_RAW_PER_HIT,
     compare_duplicate_scores,
     infer_asub001,
+    infer_asub001_row,
     infer_asub002,
-    minimum_hits_for_score_cap,
+    minimum_hits_for_row_score_cap,
     raw_to_normalized,
 )
 
 
-def test_asub001_score_inversion_recovers_exact_hit_count() -> None:
+def test_asub001_public_lb_inversion_recovers_mean_and_total_hits() -> None:
+    gpt_hits = 100
+    gemma_hits = 150
+    public_score = (
+        raw_to_normalized(gpt_hits * ASUB001_RAW_PER_HIT)
+        + raw_to_normalized(gemma_hits * ASUB001_RAW_PER_HIT)
+    ) / 2
+    result = infer_asub001(public_score)
+    assert result.equivalent_mean_hits_per_public_row == pytest.approx(125)
+    assert result.equivalent_total_hits_across_public_rows == pytest.approx(250)
+    assert result.nearest_half_mean_hits == 125
+    assert result.score_residual == pytest.approx(0.0)
+
+
+def test_asub002_public_lb_inversion_recovers_mean_hits() -> None:
+    gpt_hits = 30
+    gemma_hits = 50
+    public_score = (
+        raw_to_normalized(gpt_hits * ASUB002_RAW_PER_HIT)
+        + raw_to_normalized(gemma_hits * ASUB002_RAW_PER_HIT)
+    ) / 2
+    result = infer_asub002(public_score)
+    assert result.equivalent_mean_hits_per_public_row == pytest.approx(40)
+
+
+def test_row_inference_remains_available_when_per_model_score_is_known() -> None:
     hits = 137
-    score = raw_to_normalized(hits * ASUB001_RAW_PER_HIT)
-    result = infer_asub001(score, candidate_count=200)
+    row_score = raw_to_normalized(hits * ASUB001_RAW_PER_HIT)
+    result = infer_asub001_row(row_score, candidate_count=200)
     assert result.hit_count_estimate == pytest.approx(hits)
     assert result.nearest_integer_hits == hits
     assert result.completion_ratio == pytest.approx(hits / 200)
-    assert result.score_residual == pytest.approx(0.0)
-    assert result.capped is False
 
 
-def test_asub002_score_inversion_recovers_exact_hit_count() -> None:
-    hits = 40
-    score = raw_to_normalized(hits * ASUB002_RAW_PER_HIT)
-    result = infer_asub002(score)
-    assert result.hit_count_estimate == pytest.approx(hits)
-    assert result.nearest_integer_hits == hits
-
-
-def test_duplicate_variance_converts_to_hit_variance() -> None:
+def test_duplicate_variance_converts_to_mean_hit_variance() -> None:
     score_a = raw_to_normalized(100 * ASUB001_RAW_PER_HIT)
     score_b = raw_to_normalized(125 * ASUB001_RAW_PER_HIT)
     result = compare_duplicate_scores((score_a, score_b))
-    assert result.hit_range == pytest.approx(25)
-    assert result.hit_mean == pytest.approx(112.5)
+    assert result.equivalent_mean_hit_range == pytest.approx(25)
+    assert result.equivalent_mean_hit_mean == pytest.approx(112.5)
 
 
 def test_score_cap_is_marked_ambiguous() -> None:
     result = infer_asub001(1000.0)
     assert result.capped is True
-    assert result.raw_score_estimate == 200_000.0
-    assert minimum_hits_for_score_cap(ASUB001_RAW_PER_HIT) == 11_112
+    assert minimum_hits_for_row_score_cap(ASUB001_RAW_PER_HIT) == 11_112
 
 
 def test_invalid_inputs_raise() -> None:

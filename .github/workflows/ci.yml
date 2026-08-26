@@ -46,8 +46,9 @@ jobs:
 
       - name: Hosted-score interpreter smoke
         run: |
-          python scripts/interpret_hosted_score.py asub001 4.50 --candidates 200
-          python scripts/interpret_hosted_score.py duplicate 4.50 5.40
+          python scripts/interpret_hosted_score.py asub001 56.60
+          python scripts/interpret_hosted_score.py duplicate 49.77 56.60
+          python scripts/interpret_hosted_score.py asub001-row 12.33 --candidates 180
 
       - name: Validate R1 attack contract
         run: aicomp validate redteam attack.py
