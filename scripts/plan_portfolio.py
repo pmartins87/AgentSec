@@ -6,9 +6,16 @@ not a hidden-evaluator predictor.  Replace the assumptions after hosted evidence
 
 from __future__ import annotations
 
+import sys
 from collections import Counter
+from pathlib import Path
 
-from src.portfolio_optimizer import (
+# Allow direct execution as ``python scripts/plan_portfolio.py`` from the repo.
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from src.portfolio_optimizer import (  # noqa: E402
     competition_lanes,
     illustrative_stress_scenarios,
     optimize_minimax_ratio,
