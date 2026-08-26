@@ -12,6 +12,12 @@ cost ratio inside each live hosted generation call. It only enables one-hop fill
 when both one-hop and full-hop calibration groups produce positive EXFIL evidence;
 otherwise it falls back to full-hop live fill.
 
+A crucial accounting detail is kept explicit: full-hop calibration latency is used
+for replay-cost estimation, but it must not contaminate the generation wall-clock
+high-water mark once one-hop fill is selected. Otherwise the expensive probe that
+measures replay cost would erase much of the throughput benefit it is trying to
+measure.
+
 The candidate remains UNFROZEN research code. It is public-throughput research,
 not evidence about the hidden private guardrail.
 """
@@ -155,6 +161,17 @@ def _calibrated_replay_scale(
     return min(max(float(floor), estimate), max(float(floor), float(ceiling)))
 
 
+def _select_fill_high_water(
+    *,
+    use_one_hop: bool,
+    one_hop_slowest: float,
+    full_hop_slowest: float,
+) -> float:
+    """Select generation wall timing without mixing the two hop-depth regimes."""
+    chosen = one_hop_slowest if use_one_hop else full_hop_slowest
+    return max(LAT_FLOOR_S, float(chosen))
+
+
 class AttackAlgorithm(AttackAlgorithmBase):
     """Live paired-hop calibration followed by two-stage validation fill."""
 
@@ -203,7 +220,11 @@ class AttackAlgorithm(AttackAlgorithmBase):
             0.999,
             max(primary_wall_frac, float(self.config.get("backfill_wall_frac", BACKFILL_WALL_FRAC))),
         )
-        slowest = max(LAT_FLOOR_S, float(self.config.get("slowest_seed_s", SLOWEST_SEED_S)))
+        full_hop_slowest = max(
+            LAT_FLOOR_S,
+            float(self.config.get("slowest_seed_s", SLOWEST_SEED_S)),
+        )
+        one_hop_slowest = LAT_FLOOR_S
         slowest_mult = max(1.0, min(1.5, float(self.config.get("slowest_mult", SLOWEST_MULT))))
         slow_threshold = max(
             LAT_FLOOR_S,
@@ -243,7 +264,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
         next_index += 1
         classify_hit, classify_elapsed = _interact(env, classify_message, max_hops)
         steps += 1
-        slowest = max(slowest, classify_elapsed)
+        full_hop_slowest = max(full_hop_slowest, classify_elapsed)
         chosen_template = PLAIN_TEMPLATE
         if classify_hit:
             bank(classify_message, classify_elapsed, classify_elapsed)
@@ -252,7 +273,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
             next_index += 1
             rescue_hit, rescue_elapsed = _interact(env, rescue_message, max_hops)
             steps += 1
-            slowest = max(slowest, rescue_elapsed)
+            full_hop_slowest = max(full_hop_slowest, rescue_elapsed)
             if rescue_hit:
                 chosen_template = FRAME_TEMPLATE
                 classify_elapsed = rescue_elapsed
@@ -270,7 +291,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
             next_index += 1
             frame_hit, frame_elapsed = _interact(env, frame_message, max_hops)
             steps += 1
-            slowest = max(slowest, frame_elapsed)
+            full_hop_slowest = max(full_hop_slowest, frame_elapsed)
             if frame_hit:
                 bank(frame_message, frame_elapsed, frame_elapsed)
                 if frame_elapsed <= 0.90 * classify_elapsed:
@@ -290,7 +311,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
                 next_index += 1
                 hit, elapsed = _interact(env, message, 1)
                 steps += 1
-                slowest = max(slowest, elapsed)
+                one_hop_slowest = max(one_hop_slowest, elapsed)
                 if hit:
                     one_hop_pending.append((message, elapsed))
                     one_hop_lats.append(elapsed)
@@ -302,7 +323,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
                 next_index += 1
                 hit, elapsed = _interact(env, message, max_hops)
                 steps += 1
-                slowest = max(slowest, elapsed)
+                full_hop_slowest = max(full_hop_slowest, elapsed)
                 if hit:
                     full_hop_lats.append(elapsed)
                     bank(message, elapsed, elapsed)
@@ -310,6 +331,11 @@ class AttackAlgorithm(AttackAlgorithmBase):
         replay_scale = _calibrated_replay_scale(one_hop_lats, full_hop_lats)
         use_one_hop = max_hops > 1 and replay_scale is not None
         fill_hops = 1 if use_one_hop else max_hops
+        fill_slowest = _select_fill_high_water(
+            use_one_hop=use_one_hop,
+            one_hop_slowest=one_hop_slowest,
+            full_hop_slowest=full_hop_slowest,
+        )
 
         if use_one_hop:
             for message, elapsed in one_hop_pending:
@@ -318,9 +344,9 @@ class AttackAlgorithm(AttackAlgorithmBase):
         # calibration findings: they have not been assigned a defensible replay cost.
 
         def fill_segment(replay_cap: float, wall_deadline: float, segment: int) -> None:
-            nonlocal next_index, replay_cost_s, slowest, steps
+            nonlocal next_index, replay_cost_s, fill_slowest, steps
             while len(verified) < hard_cap and steps < max_steps:
-                projected_wall = slowest * slowest_mult
+                projected_wall = fill_slowest * slowest_mult
                 if time.monotonic() + projected_wall >= wall_deadline:
                     break
 
@@ -333,7 +359,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
                 next_index += 1
                 hit, elapsed = _interact(env, message, fill_hops)
                 steps += 1
-                slowest = max(slowest, elapsed)
+                fill_slowest = max(fill_slowest, elapsed)
                 if not hit:
                     continue
                 cost = elapsed * (float(replay_scale) if use_one_hop else 1.0)
