@@ -30,6 +30,7 @@ jobs:
           python -m py_compile submissions/ASUB-20260825-001-frontier-canary/attack.py
           python -m py_compile submissions/ASUB-20260825-002-confused-deputy-canary/attack.py
           python -m py_compile submissions/ASUB-20260825-003-semantic-intent-transfer/attack.py
+          python -m py_compile submissions/DRAFT-ASUB-004-robust-mix/attack.py
           python -m py_compile src/private_guardrail_proxy.py
           python -m py_compile src/semantic_authorization_proxy.py
           python -m py_compile src/portfolio_optimizer.py
@@ -44,11 +45,12 @@ jobs:
       - name: Validate R1 attack contract
         run: aicomp validate redteam attack.py
 
-      - name: Validate frozen submission contracts
+      - name: Validate frozen and draft submission contracts
         run: |
           aicomp validate redteam submissions/ASUB-20260825-001-frontier-canary/attack.py
           aicomp validate redteam submissions/ASUB-20260825-002-confused-deputy-canary/attack.py
           aicomp validate redteam submissions/ASUB-20260825-003-semantic-intent-transfer/attack.py
+          aicomp validate redteam submissions/DRAFT-ASUB-004-robust-mix/attack.py
 
       - name: Deterministic R1 smoke
         run: aicomp test redteam attack.py --budget-s 10 --agent deterministic
