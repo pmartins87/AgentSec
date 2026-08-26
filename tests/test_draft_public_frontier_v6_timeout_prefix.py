@@ -47,7 +47,7 @@ def test_slow_row_hop_cap_filters_forged_arms() -> None:
     assert DRAFT._active_arms(8, slow_row=True)[-1].name == "forge5"
 
 
-def test_choose_arm_uses_public_value_per_second() -> None:
+def test_unconfirmed_choice_can_identify_probe_leader() -> None:
     active = DRAFT._active_arms(8, slow_row=True)
     winner = DRAFT._choose_arm(
         [
@@ -59,9 +59,66 @@ def test_choose_arm_uses_public_value_per_second() -> None:
             _obs("forge5", 5, 27.0),
         ],
         active,
+        require_confirmation=False,
     )
     assert winner is not None
     assert winner.name == "forge5"
+
+
+def test_nonplain_requires_two_positive_observations_when_confirmed() -> None:
+    active = DRAFT._active_arms(8, slow_row=True)
+    winner = DRAFT._choose_arm(
+        [
+            _obs("plain1", 1, 8.0),
+            _obs("plain1", 1, 8.2),
+            _obs("forge5", 5, 20.0),
+        ],
+        active,
+        require_confirmation=True,
+    )
+    assert winner is not None
+    assert winner.name == "plain1"
+
+    winner = DRAFT._choose_arm(
+        [
+            _obs("plain1", 1, 8.0),
+            _obs("plain1", 1, 8.2),
+            _obs("forge5", 5, 20.0),
+            _obs("forge5", 5, 21.0),
+        ],
+        active,
+        require_confirmation=True,
+    )
+    assert winner is not None
+    assert winner.name == "forge5"
+
+
+def test_nonplain_must_beat_plain_by_configured_margin() -> None:
+    active = DRAFT._active_arms(8, slow_row=True)
+    rows = [
+        _obs("plain1", 1, 10.0),
+        _obs("plain1", 1, 10.0),
+        _obs("forge2", 2, 18.0),
+        _obs("forge2", 2, 18.0),
+    ]
+    # plain = 1.8 raw/s; forge2 ~= 1.889 raw/s: enough for 1.04, not 1.06.
+    winner = DRAFT._choose_arm(
+        rows,
+        active,
+        require_confirmation=True,
+        min_nonplain_value_ratio=1.04,
+    )
+    assert winner is not None
+    assert winner.name == "forge2"
+
+    winner = DRAFT._choose_arm(
+        rows,
+        active,
+        require_confirmation=True,
+        min_nonplain_value_ratio=1.06,
+    )
+    assert winner is not None
+    assert winner.name == "plain1"
 
 
 def test_messages_are_bounded_and_domains_vary() -> None:
