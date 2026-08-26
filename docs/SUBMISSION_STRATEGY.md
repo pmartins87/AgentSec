@@ -27,20 +27,20 @@ Every hosted run should have a declared role before launch.
 
 Question: does a throughput or replay-accounting change materially improve the public reachable lane?
 
-Examples:
+Current rungs:
 
 - ASUB-001 baseline;
 - ASUB-004 controlled public successor;
-- DRAFT-ASUB-010 primary/backfill accounting;
-- DRAFT-ASUB-011 paired one-hop/full-hop calibration.
+- ASUB-005 paired one-hop/full-hop calibration;
+- DRAFT-ASUB-010 primary/backfill accounting retained as a lower-complexity alternative.
 
 ### 2. Private-transfer hedge
 
 Question: does a structurally different family have enough public model compliance and replay validity to justify one of the final private-leaderboard selections?
 
-Example:
+Current frozen candidate:
 
-- DRAFT-ASUB-009 mixed private-aware portfolio.
+- ASUB-006 private-aware mixed hedge v2.
 
 A lower public score is acceptable here if the candidate protects a plausible private-guardrail hypothesis that a pure public EXFIL strategy does not cover.
 
@@ -78,7 +78,7 @@ This is a decision heuristic, not a rigid quota.
 
 ## Final-selection logic
 
-The competition uses the private leaderboard for final standings, and Kaggle competitions of this form allow selection of a limited number of final submissions. Final choices should therefore be complementary rather than merely the two highest noisy public scores.
+The competition uses the private leaderboard for final standings, and the current competition UI allows selection of up to two final-counting submissions. Final choices should therefore be complementary rather than merely the two highest noisy public scores.
 
 Preferred final structure unless hosted evidence strongly argues otherwise:
 
@@ -89,13 +89,19 @@ The public leaderboard is development telemetry, not the objective function.
 
 ## Current intended sequence
 
-Subject to live results and CI:
+All three current candidates are mechanically useful; order is driven by information diversity and expected prize value:
 
-1. record the pending ASUB-001 replicate when it terminates;
-2. submit a controlled public successor rather than another ASUB-001 duplicate;
-3. submit the strongest mechanically ready paired-hop/backfill frontier candidate when its latest CI is green;
-4. allocate a hosted slot to the private-aware mixed hedge early enough that a failure still leaves time for revision;
+1. **ASUB-005** — submit first as the strongest current public-upside experiment;
+2. **ASUB-006** — submit independently as the private-aware hedge; do not wait for ASUB-005 or the ASUB-001 duplicate to finish;
+3. **ASUB-004** — use another hosted slot when a controlled lower-complexity public ablation is worth more than waiting for a newer hypothesis;
+4. record the pending ASUB-001 byte-identical replicate whenever it terminates and use the spread as evaluator-variance evidence;
 5. use remaining daily capacity for evidence-driven follow-ups, not automatic repetition.
+
+## Operational UI runbook
+
+The exact Kaggle notebook/upload workflow and frozen filenames are maintained in:
+
+`docs/KAGGLE_SUBMISSION_RUNBOOK.md`
 
 ## Rule of thumb
 
