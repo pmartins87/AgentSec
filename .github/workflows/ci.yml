@@ -27,6 +27,7 @@ jobs:
       - name: Compile attack and planning sources
         run: |
           python -m py_compile attack.py
+          python -m py_compile ci/gym_smoke_attack.py
           python -m py_compile submissions/ASUB-20260825-001-frontier-canary/attack.py
           python -m py_compile submissions/ASUB-20260825-002-confused-deputy-canary/attack.py
           python -m py_compile submissions/ASUB-20260825-003-semantic-intent-transfer/attack.py
@@ -84,9 +85,12 @@ jobs:
       - name: Deterministic R1 smoke
         run: aicomp test redteam attack.py --budget-s 10 --agent deterministic
 
-      - name: Gym-style R1 evaluation
+      - name: Validate bounded gym smoke contract
+        run: aicomp validate redteam ci/gym_smoke_attack.py
+
+      - name: Gym SDK plumbing smoke
         run: |
-          aicomp evaluate redteam attack.py \
+          aicomp evaluate redteam ci/gym_smoke_attack.py \
             --budget-s 10 \
             --agent deterministic \
             --env gym \
