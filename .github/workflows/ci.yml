@@ -34,13 +34,20 @@ jobs:
           python -m py_compile src/private_guardrail_proxy.py
           python -m py_compile src/semantic_authorization_proxy.py
           python -m py_compile src/portfolio_optimizer.py
+          python -m py_compile src/hosted_evidence.py
           python -m py_compile scripts/plan_portfolio.py
+          python -m py_compile scripts/interpret_hosted_score.py
 
       - name: Run structural regressions
         run: python -m pytest -q tests
 
       - name: Portfolio planner smoke
         run: python scripts/plan_portfolio.py
+
+      - name: Hosted-score interpreter smoke
+        run: |
+          python scripts/interpret_hosted_score.py asub001 4.50 --candidates 200
+          python scripts/interpret_hosted_score.py duplicate 4.50 5.40
 
       - name: Validate R1 attack contract
         run: aicomp validate redteam attack.py
