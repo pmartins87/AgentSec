@@ -33,6 +33,7 @@ jobs:
           python -m py_compile submissions/DRAFT-ASUB-004-robust-mix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-005-public-multipost/attack.py
           python -m py_compile submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
+          python -m py_compile submissions/DRAFT-ASUB-007-forged-multipost-live/attack.py
           python -m py_compile src/private_guardrail_proxy.py
           python -m py_compile src/semantic_authorization_proxy.py
           python -m py_compile src/portfolio_optimizer.py
@@ -63,6 +64,7 @@ jobs:
           aicomp validate redteam submissions/DRAFT-ASUB-004-robust-mix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-005-public-multipost/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
+          aicomp validate redteam submissions/DRAFT-ASUB-007-forged-multipost-live/attack.py
 
       - name: Deterministic R1 smoke
         run: aicomp test redteam attack.py --budget-s 10 --agent deterministic
