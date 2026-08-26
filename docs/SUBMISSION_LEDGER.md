@@ -23,8 +23,8 @@ Record every Kaggle submission here. Never reuse a vague description such as “
 | ASUB-002 | direct Confused Deputy diagnostic/private hedge | frozen source, SDK-valid | older targeted predicate diagnostic |
 | ASUB-003 | semantic-intent private-transfer portfolio | frozen source, SDK-valid | older private-transfer rung |
 | ASUB-004 | public frontier v2 | **frozen, CI + SDK PASS** | controlled public successor; ready now |
-| ASUB-005 | paired-hop public frontier v4 | **frozen, frozen-copy CI run 86 PASS** | higher-upside public frontier; ready now |
-| ASUB-006 | private-aware mixed hedge v2 | **frozen from DRAFT-ASUB-009; frozen-copy CI run 89 pending** | final-private hedge; ready once frozen-copy CI is green |
+| ASUB-005 | paired-hop public frontier v4 | **frozen, frozen-copy CI PASS** | highest-upside frozen public frontier; ready now |
+| ASUB-006 | private-aware mixed hedge v2 | **frozen, frozen-copy CI run 89 PASS** | materially different final-private hypothesis; ready now |
 | DRAFT-ASUB-010 | public frontier v3 backfill | mechanically green | lower-complexity public alternative if paired-hop is unstable |
 | DRAFT-ASUB-011 | paired-hop research parent | mechanically green after timing separation | frozen into ASUB-005 |
 
@@ -50,7 +50,7 @@ The public candidates test increasingly different runtime hypotheses:
 2. **DRAFT-ASUB-010:** independent generation/replay accounting + conservative primary/backfill ordering;
 3. **ASUB-005:** live paired one-hop/full-hop calibration with distinct wall-clock regimes.
 
-ASUB-005's research parent originally mixed full-hop calibration latency into one-hop generation wall projections. That underfill bug was fixed by separating `full_hop_slowest` and `one_hop_slowest`; regression coverage enforces the separation. Frozen-copy CI run 86 is fully green.
+ASUB-005's research parent originally mixed full-hop calibration latency into one-hop generation wall projections. That underfill bug was fixed by separating `full_hop_slowest` and `one_hop_slowest`; regression coverage enforces the separation. Frozen-copy CI is fully green.
 
 ## Private hedge — ASUB-006
 
@@ -72,13 +72,13 @@ Two-message candidates only count calibration evidence when the intended target 
 
 The sequence is driven by expected prize value rather than by minimizing submission count:
 
-1. record ASUB-001-C whenever it terminates;
-2. **ASUB-005 is ready now** and has the highest public-frontier upside of the frozen candidates;
-3. **ASUB-004 is also ready now** and remains valuable as a controlled ablation / safer public anchor;
-4. **ASUB-006** should receive a hosted run once its frozen-copy CI is green, early enough to revise if packaging or hosted behavior is abnormal;
+1. **ASUB-005** — launch first as the strongest current public-upside experiment;
+2. **ASUB-006** — launch independently as the private-aware hedge, without waiting for ASUB-005 or ASUB-001-C;
+3. **ASUB-004** — use another hosted slot when a controlled lower-complexity public ablation has more value than waiting;
+4. record ASUB-001-C whenever it terminates and use the score spread as evaluator-variance evidence;
 5. DRAFT-ASUB-010 remains a fallback/ablation if ASUB-005 underperforms or is unstable.
 
-Independent candidates do not have to wait for ASUB-001-C.
+Exact Kaggle UI steps and filenames are in `docs/KAGGLE_SUBMISSION_RUNBOOK.md`.
 
 ## Operational score heuristic
 
