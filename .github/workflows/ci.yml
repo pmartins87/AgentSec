@@ -30,6 +30,7 @@ jobs:
           python -m py_compile submissions/ASUB-20260825-001-frontier-canary/attack.py
           python -m py_compile submissions/ASUB-20260825-002-confused-deputy-canary/attack.py
           python -m py_compile submissions/ASUB-20260825-003-semantic-intent-transfer/attack.py
+          python -m py_compile submissions/ASUB-20260826-004-public-frontier-v2/attack.py
           python -m py_compile submissions/DRAFT-ASUB-004-robust-mix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-005-public-multipost/attack.py
           python -m py_compile submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
@@ -70,6 +71,7 @@ jobs:
           aicomp validate redteam submissions/ASUB-20260825-001-frontier-canary/attack.py
           aicomp validate redteam submissions/ASUB-20260825-002-confused-deputy-canary/attack.py
           aicomp validate redteam submissions/ASUB-20260825-003-semantic-intent-transfer/attack.py
+          aicomp validate redteam submissions/ASUB-20260826-004-public-frontier-v2/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-004-robust-mix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-005-public-multipost/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
