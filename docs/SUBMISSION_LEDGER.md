@@ -11,30 +11,22 @@ Record every Kaggle submission here. Never reuse a vague description such as “
 ## Prize-first interpretation
 
 - **R3 is closed:** ASUB-001-B produced the first valid hosted public score, **77.850**.
-- The first failed attempt was a platform/system terminal class, not a numeric scorer result.
-- ASUB-001-B and C are byte-identical; if C also scores, their spread becomes direct evidence of hosted evaluator/runtime variance.
-- `77.850` lies in the precommitted `70–85` decision band, so stronger public-throughput experiments are justified.
-- The pending duplicate is **not a blocker** for independent experiments. A mechanically ready candidate with material decision value may be submitted while C is still running.
-- Daily slots are experimental capacity, not an asset to hoard. See `docs/SUBMISSION_STRATEGY.md`.
+- The pending duplicate is useful variance evidence but is **not a blocker** for independent experiments.
+- `77.850` remains below visible public opportunity around the low 90s, so stronger public-throughput experiments have material decision value.
+- Daily hosted slots are experimental capacity, not an asset to hoard. See `docs/SUBMISSION_STRATEGY.md`.
+- A mechanically ready, non-redundant candidate should be submitted when its outcome changes final selection or the next development decision.
 
 ## Prepared but not yet submitted
 
-These artifacts do not consume Kaggle submission slots merely by existing in the repository.
-
 | Candidate | Role | Current status | Hosted-slot rule |
 |---|---|---|---|
-| ASUB-002 | direct Confused Deputy diagnostic/private hedge | frozen source, SDK-valid | targeted predicate diagnostic; public economics weaker than EXFIL |
-| ASUB-003 | semantic-intent private-transfer portfolio | frozen source, SDK-valid | reserve as older private-transfer rung |
-| ASUB-004 | public frontier v2 | **frozen**, CI + SDK validation PASS | controlled public successor to ASUB-001; strong next hosted calibration candidate |
-| ASUB-005 | paired-hop public frontier v4 | **frozen from DRAFT-ASUB-011 after wall-clock fix**; frozen-copy CI pending | aggressive but measured public-frontier experiment; submit once frozen-copy CI is green |
-| DRAFT-ASUB-004 | robust mixed final-oriented portfolio | unfrozen | retained as earlier robust-mix rung |
-| DRAFT-ASUB-005 | prose multi-post diagnostic | unfrozen, strategically demoted | do not spend slot unless evidence changes |
-| DRAFT-ASUB-006 | public frontier v2 research parent | superseded by frozen ASUB-004 | preserve for provenance |
-| DRAFT-ASUB-007 | forged multi-post live value/time race | CI + SDK valid | optional higher-variance throughput diagnostic |
-| DRAFT-ASUB-008 | intent-laundering mixed portfolio | superseded by DRAFT-ASUB-009 | preserve for provenance |
-| DRAFT-ASUB-009 | private hedge v2 | **mechanically green**; first-turn laundering invariant enforced | use a hosted slot early enough to revise packaging/mechanics before final selection |
-| DRAFT-ASUB-010 | public frontier v3 backfill | mechanically green | useful alternative public ablation; lower complexity than ASUB-005 |
-| DRAFT-ASUB-011 | paired-hop research parent | **mechanically green after timing separation** | frozen into ASUB-005 |
+| ASUB-002 | direct Confused Deputy diagnostic/private hedge | frozen source, SDK-valid | older targeted predicate diagnostic |
+| ASUB-003 | semantic-intent private-transfer portfolio | frozen source, SDK-valid | older private-transfer rung |
+| ASUB-004 | public frontier v2 | **frozen, CI + SDK PASS** | controlled public successor; ready now |
+| ASUB-005 | paired-hop public frontier v4 | **frozen, frozen-copy CI run 86 PASS** | higher-upside public frontier; ready now |
+| ASUB-006 | private-aware mixed hedge v2 | **frozen from DRAFT-ASUB-009; frozen-copy CI run 89 pending** | final-private hedge; ready once frozen-copy CI is green |
+| DRAFT-ASUB-010 | public frontier v3 backfill | mechanically green | lower-complexity public alternative if paired-hop is unstable |
+| DRAFT-ASUB-011 | paired-hop research parent | mechanically green after timing separation | frozen into ASUB-005 |
 
 ## Hosted-score inversion for ASUB-001-B
 
@@ -46,49 +38,55 @@ For public score `77.850`:
 - equivalent mean successful findings per public row: `15,570 / 18 = 865`;
 - equivalent total successful findings across `gpt_oss_public + gemma_public`: `1,730`.
 
-This identifies mean public-row success volume. It does not reveal the individual GPT-OSS/Gemma split, candidate counts returned per model, or private-guardrail survival.
+This does not reveal the individual GPT-OSS/Gemma split or private-guardrail survival.
 
-## Public opportunity evidence
+## Public opportunity ladder
 
-Public competition evidence has reported scores around `91`, corresponding under the same 18-raw-per-finding public EXFIL economics to roughly `1,011–1,015` equivalent successful findings per public row. Relative to ASUB-001-B, that is an opportunity gap of roughly **146–150 additional findings per row**.
+Public competition evidence has reported scores around `91`, corresponding to roughly `1,011–1,015` equivalent public EXFIL findings per row. Relative to ASUB-001-B, the visible gap is roughly **146–150 findings per row**.
 
-ASUB-004, DRAFT-ASUB-010 and ASUB-005 attack that gap with increasingly different runtime assumptions:
+The public candidates test increasingly different runtime hypotheses:
 
-1. **ASUB-004:** controlled compact prompt + fixed plain/Harmony race + cumulative replay sizing;
-2. **DRAFT-ASUB-010:** independent generation/replay accounting + primary/backfill ordering;
-3. **ASUB-005:** live paired one-hop/full-hop calibration, with separate one-hop generation and full-hop replay timing regimes.
+1. **ASUB-004:** compact prompt + fixed plain/Harmony race + cumulative replay sizing;
+2. **DRAFT-ASUB-010:** independent generation/replay accounting + conservative primary/backfill ordering;
+3. **ASUB-005:** live paired one-hop/full-hop calibration with distinct wall-clock regimes.
 
-## ASUB-005 promotion rationale
+ASUB-005's research parent originally mixed full-hop calibration latency into one-hop generation wall projections. That underfill bug was fixed by separating `full_hop_slowest` and `one_hop_slowest`; regression coverage enforces the separation. Frozen-copy CI run 86 is fully green.
 
-The first paired-hop implementation had a subtle underfill risk: one shared latency high-water mark included slow full-hop calibration probes and was later reused for one-hop generation wall projections. That could erase much of the one-hop benefit.
+## Private hedge — ASUB-006
 
-The fix now keeps:
+ASUB-006 freezes the mechanically green DRAFT-ASUB-009 strategy rather than leaving the private candidate as a mutable draft.
 
-- `full_hop_slowest` for full-hop/replay-realistic timing;
-- `one_hop_slowest` for one-hop generation timing;
-- a live median full/one ratio, safety multiplier and conservative clamps for replay-cost conversion.
+Default 360-candidate portfolio:
 
-Regression coverage explicitly requires one-hop fill wall timing to ignore full-hop probe latency. The research-parent CI after this fix is green. ASUB-005 is a frozen copy of the corrected logic and is now gated independently in CI.
+- public EXFIL: 144
+- direct scorer-negative confused deputy: 24
+- explicit-action + neutral-tail confused deputy: 36
+- semantic email: 120
+- semantic HTTP: 12
+- semantic shell: 12
+- semantic write: 12
+
+Two-message candidates only count calibration evidence when the intended target action is attempted on the **first interaction**, while explicit authorization is current. The hidden private guardrail remains unknown; ASUB-006 exists to preserve a materially different final-private hypothesis from the public EXFIL frontier.
 
 ## Current hosted sequence
 
-The sequence is driven by prize value, not by minimizing submissions:
+The sequence is driven by expected prize value rather than by minimizing submission count:
 
 1. record ASUB-001-C whenever it terminates;
-2. **ASUB-004** is ready for a controlled public successor run;
-3. **ASUB-005** becomes ready when its frozen-copy CI finishes green;
-4. **DRAFT-ASUB-009** deserves a hosted run as a private-aware final candidate even if its visible public score is weaker;
-5. DRAFT-ASUB-010 remains a useful lower-complexity public alternative if ASUB-005 underperforms or behaves erratically.
+2. **ASUB-005 is ready now** and has the highest public-frontier upside of the frozen candidates;
+3. **ASUB-004 is also ready now** and remains valuable as a controlled ablation / safer public anchor;
+4. **ASUB-006** should receive a hosted run once its frozen-copy CI is green, early enough to revise if packaging or hosted behavior is abnormal;
+5. DRAFT-ASUB-010 remains a fallback/ablation if ASUB-005 underperforms or is unstable.
 
-Independent candidates do not have to wait for the ASUB-001 replicate.
+Independent candidates do not have to wait for ASUB-001-C.
 
 ## Operational score heuristic
 
 For public-only frontier candidates:
 
 - `<70`: regression or severe underfill; diagnose immediately;
-- `70–85`: competitive but still below visible public opportunity frontier;
-- `>=85`: strong public anchor; shift more development weight toward final-private robustness;
+- `70–85`: competitive but below visible public opportunity frontier;
+- `>=85`: strong public anchor; shift more development weight toward private robustness;
 - error/blank: mechanics/infrastructure diagnosis first.
 
 These thresholds are decision heuristics, not statistical confidence bounds.
@@ -101,5 +99,3 @@ These thresholds are decision heuristics, not statistical confidence bounds.
 - evaluator/runtime anomaly class
 - post-result interpretation
 - whether the submission remains a final candidate
-
-When pending runs terminate, replace approximate timing with exact Kaggle values if visible.
