@@ -43,12 +43,14 @@ jobs:
           python -m py_compile submissions/DRAFT-ASUB-010-public-frontier-v3-backfill/attack.py
           python -m py_compile submissions/DRAFT-ASUB-011-public-frontier-v4-paired-hops/attack.py
           python -m py_compile submissions/DRAFT-ASUB-012-public-frontier-v5-multipost-independent/attack.py
+          python -m py_compile submissions/DRAFT-ASUB-013-public-frontier-v6-timeout-prefix/attack.py
           python -m py_compile src/private_guardrail_proxy.py
           python -m py_compile src/semantic_authorization_proxy.py
           python -m py_compile src/portfolio_optimizer.py
           python -m py_compile src/private_scenario_overlay.py
           python -m py_compile src/direct_cd_split.py
           python -m py_compile src/hosted_evidence.py
+          python -m py_compile src/final_pair_selector.py
           python -m py_compile scripts/plan_portfolio.py
           python -m py_compile scripts/plan_private_robust_portfolio.py
           python -m py_compile scripts/plan_direct_cd_split.py
@@ -89,6 +91,7 @@ jobs:
           aicomp validate redteam submissions/DRAFT-ASUB-010-public-frontier-v3-backfill/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-011-public-frontier-v4-paired-hops/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-012-public-frontier-v5-multipost-independent/attack.py
+          aicomp validate redteam submissions/DRAFT-ASUB-013-public-frontier-v6-timeout-prefix/attack.py
 
       - name: Deterministic R1 smoke
         run: aicomp test redteam attack.py --budget-s 10 --agent deterministic
