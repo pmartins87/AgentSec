@@ -58,11 +58,13 @@ jobs:
           python -m py_compile src/direct_cd_split.py
           python -m py_compile src/hosted_evidence.py
           python -m py_compile src/final_pair_selector.py
+          python -m py_compile src/prefix_coverage.py
           python -m py_compile scripts/plan_portfolio.py
           python -m py_compile scripts/plan_private_robust_portfolio.py
           python -m py_compile scripts/plan_direct_cd_split.py
           python -m py_compile scripts/interpret_hosted_score.py
           python -m py_compile scripts/plan_final_pair.py
+          python -m py_compile scripts/analyze_private_prefix.py
 
       - name: Run structural regressions
         run: python -m pytest -q tests
@@ -72,6 +74,7 @@ jobs:
           python scripts/plan_portfolio.py
           python scripts/plan_private_robust_portfolio.py
           python scripts/plan_direct_cd_split.py
+          python scripts/analyze_private_prefix.py
 
       - name: Hosted-score interpreter smoke
         run: |
