@@ -72,18 +72,24 @@ Candidate methods: state-space exploration, trace-guided mutation, heuristic sea
 ## R7 — Private-guardrail robustness
 
 - Avoid strategies dependent on quirks unique to `OptimalGuardrail`.
-- Stress findings with stricter local filters/proxies.
-- Prefer severe, explicit, replay-stable violations over brittle borderline cases.
+- Maintain **multiple conflicting private hypotheses**, not one guessed guardrail.
+- Stress payload-sensitive actions with an all-arguments/DLP proxy.
+- Stress provenance dependence with a pessimistic web/email-taint proxy.
+- Test the semantic-authorization hypothesis: scorer literal intent words may disagree with a stricter semantic guardrail.
+- Keep a direct confused-deputy hedge that does not require untrusted provenance.
+- Order mixed portfolios so replay timeout still preserves cross-family coverage.
+- Prefer severe, explicit, replay-stable tool actions over harness-only tricks.
 - Hold out scenarios for final selection.
 
-**Exit:** final candidate set remains strong under stricter proxy evaluation.
+**Exit:** final candidate set has evidence across more than one plausible private-defense model and is not dominated by the public sentinel route.
 
 ## R8 — Final freeze
 
 - Reproduce final notebook from clean environment.
 - Confirm internet-off execution, runtime ceiling, `attack.py` output path, no hidden local dependency.
 - Freeze source, configuration, hashes, experiment references, and Kaggle submission ID.
-- Select final submission based on evidence, not a single noisy public score.
+- Select up to the competition-allowed final submissions based on complementary private-transfer hypotheses, not a single noisy public score.
+- Preserve at least one public-throughput anchor and one private-robust/mixed portfolio unless evidence strongly rejects a lane.
 
 **Exit:** final submission accepted before 2026-09-01 23:59 UTC.
 
