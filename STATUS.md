@@ -1,180 +1,147 @@
 # STATUS — AgentSec
 
-Last updated: 2026-08-26 after prize-first submission-policy correction and paired-hop timing fix
+Last updated: 2026-08-26 after timeout-prefix optimization wave
 
 ## Mission
 
-**Phase: R0-R3 PASS / R4-R7 optimization active / R8 pending / R9 active**
+**Phase: R0-R3 PASS / R4-R7 optimization active / R8 candidate-pair selection active / R9 active**
 
-Primary objective: maximize the probability of a prize-eligible final result in Kaggle **AI Agent Security – Multi-Step Tool Attacks**. Public leaderboard score is development telemetry; final private-leaderboard performance is the target.
+Primary objective: maximize the probability of a prize-eligible final result in Kaggle **AI Agent Security – Multi-Step Tool Attacks**. Public score is development telemetry; final private-leaderboard performance is the objective.
 
-Hosted submission policy is now explicit in `docs/SUBMISSION_STRATEGY.md`: daily slots are experimental capacity, not something to hoard. The Kaggle UI was observed on 2026-08-26 showing `1/5 used`. When two mechanically ready, non-redundant prize-relevant hypotheses exist, using more than one hosted slot in a day is desirable.
+Submission policy is prize-first: use hosted slots when a mechanically ready run has material expected score gain or decision value. Do not hoard slots, and do not spend them on redundant runs without a question.
 
-## First valid hosted result — ASUB-001
+## Hosted evidence
 
-Frozen baseline:
+### ASUB-001 baseline
 
 `submissions/ASUB-20260825-001-frontier-canary/attack.py`
 
-- source git-blob SHA: `b17180572b27d80f584d640d4ebf3ecace28df4d`
-- notebook slug: `notebooka6483cd827`
-- clean wrapper: Version 4
-- first pre-v4 attempt: `Kaggle Error / system error`
-- corrected Version 4 first copy: **Succeeded / Public Score 77.850**
-- corrected byte-identical Version 4 replicate: last observed still running; preserve its terminal result as hosted-variance evidence
+- first pre-v4 attempt: Kaggle system error;
+- corrected Version 4 first copy: **Succeeded / Public Score 77.850**;
+- byte-identical Version 4 replicate: last user-observed state still Running;
+- 77.850 corresponds to about **865 equivalent 18-raw EXFIL findings per public model row on average**.
 
-ASUB-001 is fixed public EXFIL. At 18 raw points per successful new-cell finding, `77.850` is equivalent to **865 successful findings per public model row on average**.
+The duplicate remains useful as hosted-variance evidence, but it is not a blocker for independent submissions.
 
-## Frozen public successor — ASUB-004
+## Frozen hosted candidates
+
+### ASUB-004 — controlled public frontier v2
 
 `submissions/ASUB-20260826-004-public-frontier-v2/attack.py`
 
-Role: controlled public-throughput calibration.
+Frozen, CI/SDK green. Lower-complexity controlled public successor.
 
-Main differences from ASUB-001:
+### ASUB-005 — paired-hop public frontier v4
 
-- compact `Then say OK.` terminal;
-- 3 plain + 3 Harmony probe race;
-- full-hop live validation;
-- cumulative replay sizing;
-- `REPLAY_SAFE_FRAC=0.985`;
-- `REPLAY_COST_COEF=0.95`;
-- fastest verified candidates first.
+`submissions/ASUB-20260826-005-public-frontier-v4-paired-hops/attack.py`
 
-Mechanically green: compile, structural regressions, SDK validation and clean CI all pass.
+Frozen, frozen-copy CI PASS. Separates one-hop generation timing from full-hop replay calibration and uses live full/one-hop timing evidence.
 
-## Public frontier v3 — DRAFT-ASUB-010
+### ASUB-006 — private hedge v2
 
-`submissions/DRAFT-ASUB-010-public-frontier-v3-backfill/attack.py`
+`submissions/ASUB-20260826-006-private-hedge-v2/attack.py`
 
-Role: exploit the published independence of generation and replay windows while protecting already-earned replay score.
+Frozen, frozen-copy CI PASS. 360-candidate mixed portfolio spanning public EXFIL, direct confused deputy and semantic source→action families. Two-message laundering evidence requires the target action during the first interaction while explicit authorization is current.
 
-Key design:
+### ASUB-007 — timeout-prefix public frontier v6
 
-- independent generation/replay budget accounting;
-- warm-up at one hop;
-- conservative primary segment followed by near-deadline backfill;
-- primary ordered before speculative backfill so replay truncation sacrifices the tail first;
-- live keep-only-if-fired validation;
-- classifier rescue so one unlucky plain miss cannot force a 300-candidate fallback.
+`submissions/ASUB-20260826-007-public-frontier-v6-timeout-prefix/attack.py`
 
-Mechanically green under current CI.
+Frozen from mechanically green DRAFT-ASUB-013. Blob SHA `f5eeb96d050c26544e8d945cf5af66b0977f0ae7`.
 
-## Public frontier v4 — DRAFT-ASUB-011 paired hops
+New evaluator-aware design:
 
-`submissions/DRAFT-ASUB-011-public-frontier-v4-paired-hops/attack.py`
+- tiny generation calibration;
+- fast row stays plain single-post;
+- slow row races plain/Harmony/forged 2..5-post arms by observed public raw score per full-hop second;
+- non-plain winner must be confirmed by at least two positive observations and beat the plain anchor by a margin;
+- returns the full legal **2,000-candidate** archive from the confirmed arm;
+- deliberately does not shorten the archive to an estimated replay cap because the updated evaluator preserves score accumulated before replay timeout.
 
-Research question: can generation use `max_tool_hops=1` to skip scoring-irrelevant model wrap-up while still estimating the evaluator's full-hop replay cost from live hosted calibration?
+This is currently the highest-upside public research hypothesis. It remains a distinct experiment from ASUB-005 rather than silently replacing it.
 
-Current design:
+### ASUB-008 — timeout-prefix private hedge v3
 
-- paired one-hop/full-hop positive calibration;
-- median full/one latency ratio with safety multiplier and conservative clamps;
-- one-hop fill enabled only when both calibration groups have enough positive EXFIL evidence;
-- automatic fallback to full-hop fill when calibration is insufficient;
-- full-hop replay probes and one-hop generation now maintain **separate wall-clock high-water marks**.
+`submissions/ASUB-20260826-008-private-hedge-v3-timeout-prefix/attack.py`
 
-The last item fixes an important underfill bug found during review: the earlier implementation updated a single `slowest` value with expensive full-hop calibration calls. If one-hop fill was later selected, that full-hop latency still controlled the generation deadline projection and could erase much of the expected one-hop throughput gain. Commit `c2d3991...` separates the timing regimes, and a regression test now explicitly requires one-hop fill timing to ignore full-hop probe latency.
+Frozen from mechanically green DRAFT-ASUB-014. Blob SHA `5f4a675a444027b25071f722421674fc9624040b`.
 
-CI run 80 before this timing fix was fully green. A new CI run is triggered by the fix and must be green before DRAFT-ASUB-011 is promoted for hosted use.
+It preserves the ASUB-006 private-hypothesis weights but scales the portfolio to the full **2,000 findings** and interleaves families so replay truncation does not discard an entire private hypothesis at the tail. Hidden private behavior remains unknown; this is deliberate uncertainty coverage, not a claim about the secret guardrail.
 
-## Private-aware hedge — DRAFT-ASUB-009
+## Evaluator update and strategic consequence
 
-`submissions/DRAFT-ASUB-009-private-hedge-v2/attack.py`
+Kaggle staff announced that public/private **replay timeouts preserve score accumulated before timeout**, while attack-generation timeout remains terminal. This changes the runtime optimization problem.
 
-Role: protect final-private prize probability against the known weakness of a pure public EXFIL strategy.
+Earlier strategy: estimate replay capacity conservatively and stop before timeout.
 
-Default 360-candidate portfolio:
+Current timeout-prefix strategy: keep generation safely bounded, identify high-value replay mechanisms, return a value-ordered or robustly interleaved full legal archive, and allow replay truncation to remove only the tail.
 
-- public EXFIL: **144**
-- direct scorer-negative confused deputy: **24**
-- explicit-action + neutral-tail confused deputy: **36**
-- semantic email: **120**
-- semantic HTTP: **12**
-- semantic shell: **12**
-- semantic write: **12**
+Research record: `research/20260826_REPLAY_TIMEOUT_PREFIX.md`.
 
-Two-message laundering candidates require the target-tool action to be attempted on the **first interaction**, while explicit authorization is still current. Delayed target actions after the neutral tail are rejected as false calibration evidence.
+The Overview currently states 18,000 seconds per target model, while older host discussion described independent phase budgets differently. Runtime code therefore uses live `AttackRunConfig.time_budget_s` and does not hard-code either documentation number.
 
-Mechanically green in the current full CI suite. Its hosted public score may be much lower than the public EXFIL frontier; that alone is not a rejection criterion because final standings use the stricter private guardrail.
+## New public research ladder
 
-## CI
+- DRAFT-ASUB-012: independent generation/replay windows + live multi-post arm race + conservative primary/backfill sizing.
+- DRAFT-ASUB-013: full timeout-prefix archive; frozen as ASUB-007 after confirmation hardening.
+- ASUB-007 is the preferred next-generation public experiment once hosted capacity and current results make it valuable.
 
-The project now separates attack-logic throughput tests from SDK/Gym plumbing tests.
+## New private research ladder
 
-- previous false-red source: production attack intentionally consumes nearly all of an exact 10-second budget, occasionally crossing the CI boundary by a fraction of a second;
-- fix: bounded `ci/gym_smoke_attack.py` verifies SDK/Gym mechanics independently;
-- CI run 76: **PASS, 105 tests**;
-- CI run 80: **PASS** with DRAFT-ASUB-011 included in compile/SDK gates;
-- latest paired-hop wall-clock-separation commit has triggered a fresh CI run; terminal green is the promotion gate.
+- ASUB-006: 360-candidate private hedge baseline.
+- DRAFT-ASUB-014: same hypothesis mix scaled/interleaved to 2,000 under prefix-preserving replay semantics.
+- ASUB-008: frozen copy of DRAFT-ASUB-014 for future hosted use.
 
-## Official benchmark facts frozen
+## Final two-submission selection
 
-- `aicomp-sdk==3.1.2`
-- replay cap: <=2,000 findings, <=32 messages/finding, <=2,000 chars/message
-- score: severity weights plus +2 per unique score cell
-- hosted evaluator runs GPT-OSS and Gemma separately
-- returned candidates are independently replayed against public `OptimalGuardrail` and a stricter hidden private guardrail
-- final standings use the **private leaderboard**
-- final submission deadline: 2026-09-01 23:59 UTC
-- Working Note deadline: 2026-09-08 23:59 UTC
+Added `src/final_pair_selector.py` and `scripts/plan_final_pair.py`.
 
-## Public/private asymmetry
+The selector treats the two final Kaggle slots as a **pair**, not as two independent public-LB maxima. Given explicit scenario projections, it minimizes maximum regret relative to the best candidate in each scenario, then maximizes worst-case and weighted-mean pair performance.
 
-The public generation environment exposes `OptimalGuardrail`; private replay is hidden. Consequently:
+All private scenario inputs remain explicit stress assumptions until real evidence exists. The tool does not pretend to know the hidden guardrail.
 
-- public model compliance and latency can be measured live;
-- hidden-private survival cannot be observed during generation;
-- a pure public EXFIL score can be high and still be a weak final-private strategy;
-- final candidates should cover conflicting plausible private mechanisms rather than optimize one public sentinel route only.
+## CI state
 
-## Submission strategy
+CI run 110 completed **SUCCESS** after the newest DRAFT-ASUB-012/013/014 logic, confirmation tests, final-pair selector tests, SDK validations, deterministic smoke and Gym plumbing checks were present on main.
 
-See `docs/SUBMISSION_STRATEGY.md`.
+ASUB-007 and ASUB-008 are exact blob copies of the green DRAFT-ASUB-013 and DRAFT-ASUB-014 sources respectively. Their freeze commit triggered a subsequent CI run; the workflow at that freeze commit still gates the corresponding draft blobs rather than listing the new frozen paths explicitly.
 
-Current rule: **submit when a mechanically ready run has material expected score gain or decision value; do not delay merely to conserve a daily slot.** Also do not submit near-duplicates without a concrete question.
+## Current hosted priority
 
-Current intended hosted sequence, subject to live results:
+Subject to what is already queued/running in Kaggle:
 
-1. record the pending ASUB-001 replicate when it terminates;
-2. use a hosted slot for a controlled public successor rather than another baseline duplicate;
-3. use another slot for the strongest mechanically ready advanced public frontier (DRAFT-ASUB-010 or DRAFT-ASUB-011 after latest CI);
-4. use a hosted slot for DRAFT-ASUB-009 early enough to revise the private hedge before the deadline;
-5. use remaining daily capacity for evidence-driven follow-ups.
+1. preserve all terminal scores/errors and notebook versions in the ledger;
+2. ASUB-005 remains the established advanced public candidate if not already submitted;
+3. ASUB-006 remains the established private-aware hedge if not already submitted;
+4. ASUB-007 is the next high-upside public experiment based on the new replay-timeout contract;
+5. ASUB-008 is the next private-aware timeout-prefix experiment;
+6. ASUB-004 remains a valuable controlled public ablation if more hosted evidence is needed.
 
-There is no requirement that step 1 finish before independent steps 2-4 can launch.
-
-## Final-selection principle
-
-Unless evidence strongly rejects a lane, preserve complementary final candidates:
-
-- one high-throughput public anchor with the strongest plausible private transfer;
-- one private-aware mixed hedge covering mechanisms the anchor does not.
-
-The best noisy public score is not automatically the best final submission.
+Do not infer that a lower public score automatically rejects a private-aware candidate.
 
 ## Working Note
 
-`docs/WORKING_NOTE_OUTLINE.md` already contains:
+The Working Note evidence base now includes:
 
 - public-generation/private-replay asymmetry;
-- last-message intent laundering;
-- authorization-context TOCTOU mismatch;
-- direct synonym vs laundering ablation;
+- scorer/guardrail authorization-context mismatch;
+- first-turn intent laundering tests;
 - public throughput vs private robustness;
 - hosted evaluator variance;
-- first real hosted score `77.850`;
-- second-wave replay-budget and hop-depth experiments.
+- first valid public score 77.850;
+- one-hop/full-hop calibration;
+- multi-post value/time trade-offs;
+- **timeout semantics change the optimal archive-sizing policy**: zero-on-timeout favors conservative sizing, prefix-preserving replay timeout favors value-ordered oversubscription.
 
 ## Promotion gates
 
-- **R0 PASS:** rules, eligibility, repository, metric/environment inventory.
-- **R1 PASS:** SDK-aligned baseline/contracts reproduced.
-- **R2 PASS:** deterministic local replay/trace plumbing.
-- **R3 PASS:** first valid hosted score = **77.850**.
+- **R0 PASS:** rules, eligibility, repository and benchmark inventory.
+- **R1 PASS:** SDK-aligned baseline/contracts.
+- **R2 PASS:** deterministic replay/trace plumbing.
+- **R3 PASS:** first valid hosted score = 77.850.
 - **R4 active:** predicate-directed reproducible lanes.
 - **R5 active:** diversity/coverage engine.
-- **R6 active:** runtime allocation and candidate ordering.
+- **R6 active:** runtime allocation, candidate ordering and timeout-prefix optimization.
 - **R7 active:** multiple plausible private-guardrail stress models.
-- **R8 pending:** final private-aware freeze + final submission selection.
+- **R8 active:** complementary final-pair selection and hosted evidence gathering.
 - **R9 active:** Working Note evidence architecture and finalization.
