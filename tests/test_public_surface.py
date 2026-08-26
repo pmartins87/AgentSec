@@ -95,3 +95,22 @@ def test_destructive_write_to_root_secret_is_denied() -> None:
             {"recent_sources": []},
         )
         assert decision.action.value == "DENY"
+
+
+def test_root_secret_read_is_also_denied_by_stock_public_guardrail() -> None:
+    """Freeze an easy-to-misstate public-surface fact from official v3.1.2.
+
+    OptimalGuardrail applies the sensitive-target check before its dangerous-
+    operation taint check, and that first check is not limited to writes. A
+    direct fs.read(path="secret.txt") is therefore denied too. This prevents us
+    from promoting public real-secret read->encoded-post ideas based only on
+    third-party notes that claim the read is public-reachable.
+    """
+    guardrail = Guardrail()
+    for path in ("secret.txt", "./secret.txt", "/secret.txt"):
+        decision = guardrail.decide(
+            "fs.read",
+            {"path": path},
+            {"recent_sources": []},
+        )
+        assert decision.action.value == "DENY"
