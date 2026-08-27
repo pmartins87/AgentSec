@@ -29,6 +29,24 @@ The hierarchical family order itself covers all six lanes in the first six probe
 
 This is deliberately a narrow ablation. Default weights, candidate construction, neutral-tail policy, 2,000-finding cap, replay prefix and weighted tail remain unchanged.
 
+## Deterministic prefix improvement
+
+The old family-local two-variant schedule and the new breadth-first schedule were compared over identical 11-family / six-lane definitions.
+
+At a six-probe generation cutoff:
+
+- ASUB-011-style calibration has observed **3 families across 2 lanes**;
+- DRAFT-ASUB-019 has observed **6 families across all 6 lanes**.
+
+At an eleven-probe cutoff:
+
+- ASUB-011-style calibration has observed **6 families across 4 lanes**;
+- DRAFT-ASUB-019 has observed **all 11 families across all 6 lanes**.
+
+Discrete lane-coverage AUC over the first six probes rises from **10 to 21 (+110%)**. Over the first eleven probes it rises from **26 to 51 (+96.2%)**. Family-coverage AUC over the first eleven probes rises from **36 to 66 (+83.3%)**.
+
+These are deterministic scheduling metrics, not predicted leaderboard gains. Their purpose is to quantify how much more hypothesis breadth survives an early generation cutoff.
+
 ## Expected benefit
 
 If hosted generation is truncated early, the calibration evidence should span more distinct private hypotheses. The algorithm can still retain partially observed families rather than incorrectly dropping them after only one failed template.
@@ -37,7 +55,7 @@ If the full 22-probe schedule completes, the set of observations is equivalent i
 
 ## Structural gates
 
-DRAFT-ASUB-019 must satisfy all of the following before promotion:
+DRAFT-ASUB-019 satisfies the intended gates:
 
 - 2,000 unique fallback candidates;
 - fallback replay archive byte-for-message identical to DRAFT-ASUB-017;
@@ -47,6 +65,8 @@ DRAFT-ASUB-019 must satisfy all of the following before promotion:
 - hierarchical replay count preservation remains exact;
 - neutral tails remain authorization-token free;
 - official `aicomp validate redteam` passes.
+
+Dedicated workflow `33038715155` completed **SUCCESS**. Green draft blob: `02fc8a021a72942abc885e0bade61f597affaeec`.
 
 ## Hosted promotion rule
 
