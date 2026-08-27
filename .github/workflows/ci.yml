@@ -38,6 +38,8 @@ jobs:
           python -m py_compile submissions/ASUB-20260826-008-private-hedge-v3-timeout-prefix/attack.py
           python -m py_compile submissions/ASUB-20260826-009-private-hedge-v4-coverage-prefix/attack.py
           python -m py_compile submissions/ASUB-20260826-010-public-frontier-v7-format-diverse/attack.py
+          python -m py_compile submissions/ASUB-20260827-011-private-hedge-v5-hierarchical-prefix/attack.py
+          python -m py_compile submissions/ASUB-20260827-012-public-frontier-v8-interface-only-full-prefix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-004-robust-mix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-005-public-multipost/attack.py
           python -m py_compile submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
@@ -51,18 +53,22 @@ jobs:
           python -m py_compile submissions/DRAFT-ASUB-014-private-hedge-v3-timeout-prefix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-015-private-hedge-v4-coverage-prefix/attack.py
           python -m py_compile submissions/DRAFT-ASUB-016-public-frontier-v7-format-diverse/attack.py
+          python -m py_compile submissions/DRAFT-ASUB-017-private-hedge-v5-hierarchical-prefix/attack.py
+          python -m py_compile submissions/DRAFT-ASUB-018-public-frontier-v8-interface-only-full-prefix/attack.py
           python -m py_compile src/private_guardrail_proxy.py
           python -m py_compile src/semantic_authorization_proxy.py
           python -m py_compile src/portfolio_optimizer.py
           python -m py_compile src/private_scenario_overlay.py
           python -m py_compile src/direct_cd_split.py
           python -m py_compile src/hosted_evidence.py
+          python -m py_compile src/hosted_decision.py
           python -m py_compile src/final_pair_selector.py
           python -m py_compile src/prefix_coverage.py
           python -m py_compile scripts/plan_portfolio.py
           python -m py_compile scripts/plan_private_robust_portfolio.py
           python -m py_compile scripts/plan_direct_cd_split.py
           python -m py_compile scripts/interpret_hosted_score.py
+          python -m py_compile scripts/compare_hosted_candidates.py
           python -m py_compile scripts/plan_final_pair.py
           python -m py_compile scripts/analyze_private_prefix.py
 
@@ -81,6 +87,7 @@ jobs:
           python scripts/interpret_hosted_score.py asub001 56.60
           python scripts/interpret_hosted_score.py duplicate 49.77 56.60
           python scripts/interpret_hosted_score.py asub001-row 12.33 --candidates 180
+          python scripts/compare_hosted_candidates.py smoke 90.0
 
       - name: Validate R1 attack contract
         run: aicomp validate redteam attack.py
@@ -97,6 +104,8 @@ jobs:
           aicomp validate redteam submissions/ASUB-20260826-008-private-hedge-v3-timeout-prefix/attack.py
           aicomp validate redteam submissions/ASUB-20260826-009-private-hedge-v4-coverage-prefix/attack.py
           aicomp validate redteam submissions/ASUB-20260826-010-public-frontier-v7-format-diverse/attack.py
+          aicomp validate redteam submissions/ASUB-20260827-011-private-hedge-v5-hierarchical-prefix/attack.py
+          aicomp validate redteam submissions/ASUB-20260827-012-public-frontier-v8-interface-only-full-prefix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-004-robust-mix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-005-public-multipost/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-006-public-frontier-v2/attack.py
@@ -110,6 +119,8 @@ jobs:
           aicomp validate redteam submissions/DRAFT-ASUB-014-private-hedge-v3-timeout-prefix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-015-private-hedge-v4-coverage-prefix/attack.py
           aicomp validate redteam submissions/DRAFT-ASUB-016-public-frontier-v7-format-diverse/attack.py
+          aicomp validate redteam submissions/DRAFT-ASUB-017-private-hedge-v5-hierarchical-prefix/attack.py
+          aicomp validate redteam submissions/DRAFT-ASUB-018-public-frontier-v8-interface-only-full-prefix/attack.py
 
       - name: Deterministic R1 smoke
         run: aicomp test redteam attack.py --budget-s 10 --agent deterministic
