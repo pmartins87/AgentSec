@@ -38,13 +38,24 @@ For the current 11-family, six-lane portfolio:
 
 The +24.4% number is a deterministic coverage metric, not a predicted leaderboard-score gain.
 
-## 5. Interface-only public control
+## 5. Hierarchical calibration breadth
+
+DRAFT-ASUB-019 applies the same breadth principle to **generation-time calibration** while keeping the ASUB-011 fallback replay archive unchanged. Instead of probing both wording variants of one family before moving on, it performs two breadth-first passes over the hierarchical family order:
+
+1. variant 0 for every family;
+2. variant 1 for every family.
+
+The first six calibration probes therefore cover all six lanes, the first eleven cover all eleven families, and no second wording variant is attempted until every family has received one probe. A family with only one failed observation is retained as unresolved rather than dropped as if both variants had been tested.
+
+This is intended to reduce sensitivity to short generation windows. If the full 22-probe schedule completes, DRAFT-ASUB-019 has essentially the same calibration breadth as ASUB-011 and differs mainly in ordering. The design therefore supports a narrow attribution: any benefit should come from better early evidence allocation rather than a different replay portfolio.
+
+## 6. Interface-only public control
 
 DRAFT-ASUB-018/ASUB-012 isolates the lowest-assumption public strategy in the current ladder: 2,000 ordinary one-message `http.post` requests, one unique synthetic destination per finding, no control-token framing, no forged model/tool transcript, and no live model-format classification.
 
 Its purpose is experimental rather than ideological. If it performs within the empirical hosted noise band of more complex public strategies, the simpler documented-interface mechanism becomes attractive because it depends on fewer evaluator-specific assumptions. If the complex strategies clearly outperform it beyond the observed noise band, their extra machinery has stronger hosted evidence of value.
 
-## 6. Final selection is a portfolio problem
+## 7. Final selection is a portfolio problem
 
 Kaggle allows two final selected submissions. We therefore model selection as a pair rather than independently taking the two largest noisy public scores. The intended pair structure is:
 
@@ -53,12 +64,13 @@ Kaggle allows two final selected submissions. We therefore model selection as a 
 
 `src/final_pair_selector.py` evaluates candidate pairs under explicit stress scenarios and minimizes worst-case regret before considering worst-case and weighted-mean pair performance. Scenario inputs remain assumptions until replaced by evidence.
 
-## 7. Current limitations
+## 8. Current limitations
 
 - Public scores do not expose the hidden private-defense survival of each mechanism.
 - Two byte-identical hosted replicas provide useful operational evidence of noise but are insufficient for formal variance estimation.
 - Synthetic benchmark tool misuse does not imply the same behavior in production agents or unrelated systems.
 - Coverage metrics measure diversity of tested hypotheses, not security impact or final leaderboard score.
+- Hierarchical calibration is a budget-allocation hypothesis until hosted evidence shows generation truncation or a score difference beyond ordinary run variance.
 - Public model-format behavior may change with evaluator revisions; the interface-only control is retained specifically to test dependence on those assumptions.
 
 ## Pending inserts
@@ -70,4 +82,5 @@ When the current hosted wave finishes, insert:
 - ASUB-007 public score;
 - pairwise comparison using the empirical-noise decision helper;
 - whether ASUB-011 and/or ASUB-012 were then promoted to hosted evaluation;
+- whether DRAFT-ASUB-019 earned promotion based on hosted evidence of generation truncation/order sensitivity;
 - final two selected submissions and rationale.
