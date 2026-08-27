@@ -1,6 +1,6 @@
 # STATUS — AgentSec
 
-Last updated: 2026-08-26 after ASUB-010 format-diverse promotion
+Last updated: 2026-08-26 after ASUB-001 duplicate completed
 
 ## Mission
 
@@ -18,10 +18,15 @@ Submission policy is prize-first: use hosted slots when a mechanically ready run
 
 - first pre-v4 attempt: Kaggle system error;
 - corrected Version 4 first copy: **Succeeded / Public Score 77.850**;
-- byte-identical Version 4 replicate: last user-observed state still Running;
-- 77.850 corresponds to about **865 equivalent 18-raw EXFIL findings per public model row on average**.
+- byte-identical Version 4 replicate: **Succeeded / Public Score 86.040**;
+- 77.850 corresponds to **865 equivalent 18-raw EXFIL findings per public model row on average**;
+- 86.040 corresponds to **956 equivalent findings per public model row on average**;
+- duplicate spread: **8.190 leaderboard points = 91 equivalent findings per public row**;
+- duplicate mean: **81.945**.
 
-The duplicate remains useful as hosted-variance evidence, but it is not a blocker for independent submissions.
+This is now direct hosted evidence of material evaluator/runtime variance. Single-run public score differences of only a few points should therefore be interpreted cautiously.
+
+The 86.040 replicate crosses the project's >=85 strong-public-anchor heuristic. That changes hosted priority: obtain private-aware evidence before spending several more slots on public-only tuning.
 
 ## Frozen hosted candidates
 
@@ -73,7 +78,7 @@ Frozen blob `86444fa16cb817fa210ade4319ec52e8ad5ece6c` after dedicated DRAFT-ASU
 - after the coverage prelude, exact remaining counts resume weighted deficit interleaving;
 - short private replays therefore sample all active families as early as possible while long replays preserve intended proportions.
 
-ASUB-009 is the preferred **new** private timeout-prefix submission.
+ASUB-009 is the preferred **next hosted submission** after the 86.040 public anchor.
 
 ### ASUB-010 — format-diverse public frontier v7
 
@@ -91,7 +96,7 @@ New live public race:
 
 Promotion is deliberately conservative: every non-plain arm needs at least **two positive observations** and must beat the positive plain anchor by a configurable raw-score-per-second margin before it may own the archive. Unsupported/inert formats therefore fall back to plain. The confirmed winner returns the full legal **2,000-candidate** timeout-prefix archive.
 
-This is now the newest high-information frozen public experiment. It does not replace ASUB-007 until hosted evidence resolves whether format diversity is worth the extra complexity.
+ASUB-010 remains the next public high-information experiment after private-aware evidence is obtained.
 
 ## Evaluator update and strategic consequence
 
@@ -118,7 +123,7 @@ Research/attribution: `research/20260826_MODEL_FORMAT_DIVERSITY.md`. Public fiel
 
 - ASUB-006: 360-candidate private hedge baseline.
 - ASUB-008: full-cap weighted-interleaved private hedge.
-- ASUB-009: full-cap coverage-first private hedge; preferred new private candidate.
+- ASUB-009: full-cap coverage-first private hedge; preferred next hosted candidate.
 
 The hidden private guardrail is never queried during generation. All private mechanisms remain explicit hypotheses, not observations.
 
@@ -133,15 +138,15 @@ All private scenario inputs remain explicit stress assumptions until real eviden
 - Full CI run `33018697791`: **SUCCESS** after DRAFT-ASUB-016 was added to compile + official SDK validation and its structural tests entered the complete test suite.
 - The same run also compiled/validated frozen ASUB-007/008/009 and exercised frozen-identity locks.
 - DRAFT-ASUB-015 dedicated workflow `33001993816`: **SUCCESS** before ASUB-009 freeze.
-- ASUB-010 is an exact blob copy of the full-CI-green DRAFT-ASUB-016 source; frozen-identity and direct frozen compile/SDK gates are included in the next freeze commit.
+- ASUB-010 is an exact blob copy of the full-CI-green DRAFT-ASUB-016 source.
 
 ## Current hosted priority
 
 Subject to what is already queued/running in Kaggle:
 
-1. preserve all terminal scores/errors and notebook versions in the ledger;
-2. **ASUB-010** — newest high-information public format-diverse experiment;
-3. **ASUB-009** — preferred new private timeout-prefix hedge;
+1. preserve both terminal ASUB-001 Version 4 scores as evaluator-variance evidence;
+2. **ASUB-009** — preferred next private timeout-prefix hedge with coverage-first prefix;
+3. **ASUB-010** — newest high-information public format-diverse experiment;
 4. **ASUB-007** — simpler full-cap public timeout-prefix anchor;
 5. ASUB-005 — established advanced public candidate if not already submitted;
 6. ASUB-006 — established private-aware baseline if not already submitted;
@@ -158,8 +163,7 @@ The Working Note evidence base now includes:
 - scorer/guardrail authorization-context mismatch;
 - first-turn intent laundering tests;
 - public throughput vs private robustness;
-- hosted evaluator variance;
-- first valid public score 77.850;
+- **hosted evaluator variance from byte-identical 77.850 vs 86.040 runs**;
 - one-hop/full-hop calibration;
 - multi-post value/time trade-offs;
 - timeout semantics changing the optimal archive-sizing policy;
@@ -171,7 +175,7 @@ The Working Note evidence base now includes:
 - **R0 PASS:** rules, eligibility, repository and benchmark inventory.
 - **R1 PASS:** SDK-aligned baseline/contracts.
 - **R2 PASS:** deterministic replay/trace plumbing.
-- **R3 PASS:** first valid hosted score = 77.850.
+- **R3 PASS:** first valid hosted score = 77.850; byte-identical replicate = 86.040.
 - **R4 active:** predicate-directed reproducible lanes.
 - **R5 active:** diversity/coverage engine.
 - **R6 active:** runtime allocation, candidate ordering, timeout-prefix and model-format optimization.
