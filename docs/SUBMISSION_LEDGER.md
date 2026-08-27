@@ -6,13 +6,14 @@ Record every Kaggle submission here. Never reuse a vague description such as “
 |---|---|---|---|---:|---:|---:|---:|---|
 | ASUB-20260825-001-A | 2026-08-25 (exact time pending) | frozen ASUB-001 blob `b17180572b27d80f584d640d4ebf3ecace28df4d` | `notebooka6483cd827`, pre-v4 wiring | — | — | hidden | — | **Kaggle Error / system error.** Initial notebook wiring was subsequently corrected. Do not interpret as strategy failure. |
 | ASUB-20260825-001-B | 2026-08-26 (exact submission time pending) | same frozen ASUB-001 source; wrapper Version 4 | `notebooka6483cd827` Version 4 | — | **77.850** | hidden | terminal success; exact runtime pending | First valid hosted result. Fixed 18-raw-points-per-success economics imply **865 equivalent successful findings per public model row on average**. |
-| ASUB-20260825-001-C | 2026-08-26 (exact submission time pending) | byte-identical Version 4 duplicate | `notebooka6483cd827` Version 4 | — | pending | hidden | last observed `Running` | Accidental duplicate preserved as evaluator-variance evidence. Do not launch another identical copy. |
+| ASUB-20260825-001-C | 2026-08-26 (exact submission time pending) | byte-identical Version 4 duplicate | `notebooka6483cd827` Version 4 | — | **86.040** | hidden | terminal success; exact runtime pending | Byte-identical replicate. Equivalent **956 successful findings per public model row on average**. Preserve as direct evaluator-variance evidence. |
 
 ## Prize-first interpretation
 
-- **R3 is closed:** ASUB-001-B produced the first valid hosted public score, **77.850**.
-- The pending duplicate is useful variance evidence but is **not a blocker** for independent experiments.
-- `77.850` remains materially below strong public post-refresh results, so stronger public-throughput experiments retain decision value.
+- **R3 is closed:** ASUB-001 produced two valid hosted public scores: **77.850** and **86.040**.
+- The byte-identical replicate improved by **8.190 leaderboard points**, equivalent to a range of **91 successful EXFIL findings per public model row** under the fixed 18-raw lane economics.
+- Duplicate mean public score is **81.945**. The spread is large enough that single-run public differences of only a few points should not be over-interpreted.
+- **86.040 is now a strong public anchor under the project's >=85 operational heuristic.** This raises the information value of a private-aware hosted experiment before spending multiple additional slots on public-only tuning.
 - Daily hosted slots are experimental capacity, not an asset to hoard. See `docs/SUBMISSION_STRATEGY.md`.
 - A mechanically ready, non-redundant candidate should be submitted when its outcome changes final selection or the next development decision.
 
@@ -34,7 +35,7 @@ A candidate appearing here is **not recorded as actually submitted** until the K
 | DRAFT-ASUB-010 | public frontier v3 backfill | mechanically green | lower-complexity alternative if aggressive frontier is unstable |
 | DRAFT-ASUB-012 | independent-window multipost frontier | mechanically green | bridge experiment; superseded in upside by later public frontiers |
 
-## Hosted-score inversion for ASUB-001-B
+## Hosted-score inversion for ASUB-001
 
 ASUB-001 gives **18 raw points per successful replayed finding**: severity-5 EXFIL contributes 16 and a unique score cell contributes 2.
 
@@ -44,7 +45,19 @@ For public score `77.850`:
 - equivalent mean successful findings per public row: `15,570 / 18 = 865`;
 - equivalent total successful findings across `gpt_oss_public + gemma_public`: `1,730`.
 
-This does not reveal the individual GPT-OSS/Gemma split or private-guardrail survival.
+For the byte-identical replicate score `86.040`:
+
+- raw-equivalent score per public row: `86.040 × 200 = 17,208`;
+- equivalent mean successful findings per public row: `17,208 / 18 = 956`;
+- equivalent total successful findings across the two public rows: `1,912`.
+
+Duplicate spread:
+
+- score range: `86.040 - 77.850 = 8.190`;
+- equivalent mean-hit range: `956 - 865 = 91` findings per public row;
+- duplicate score mean: `(86.040 + 77.850) / 2 = 81.945`.
+
+These public aggregates do not reveal the individual GPT-OSS/Gemma split or private-guardrail survival.
 
 ## Public opportunity ladder
 
@@ -105,8 +118,8 @@ The project includes `src/final_pair_selector.py` plus `scripts/plan_final_pair.
 Subject to what is already queued or submitted in Kaggle:
 
 1. preserve all terminal results and exact notebook versions;
-2. **ASUB-010** — newest high-information public format-diverse experiment;
-3. **ASUB-009** — preferred new private timeout-prefix hedge with coverage-first prefix;
+2. **ASUB-009** — preferred next private timeout-prefix hedge now that ASUB-001 has produced a strong 86.040 public anchor;
+3. **ASUB-010** — newest high-information public format-diverse experiment;
 4. **ASUB-007** — simpler full-cap public timeout-prefix anchor;
 5. **ASUB-005** — established advanced public experiment when not already submitted;
 6. **ASUB-006** — established private-aware baseline when not already submitted;
