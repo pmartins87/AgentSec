@@ -1,0 +1,35 @@
+name: Validate ASUB-013
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate-asub013:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install SDK and pytest
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pytest
+
+      - name: Compile frozen candidate
+        run: python -m py_compile submissions/ASUB-20260829-013-public-frontier-v9-baseline-exact-full-prefix/attack.py
+
+      - name: Frozen identity and structural tests
+        run: |
+          python -m pytest -q tests/test_draft_public_frontier_v9_baseline_exact_full_prefix.py tests/test_frozen_asub013_identity.py
+
+      - name: Official SDK validation
+        run: aicomp validate redteam submissions/ASUB-20260829-013-public-frontier-v9-baseline-exact-full-prefix/attack.py
