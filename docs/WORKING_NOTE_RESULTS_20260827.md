@@ -64,7 +64,38 @@ Kaggle allows two final selected submissions. We therefore model selection as a 
 
 `src/final_pair_selector.py` evaluates candidate pairs under explicit stress scenarios and minimizes worst-case regret before considering worst-case and weighted-mean pair performance. Scenario inputs remain assumptions until replaced by evidence.
 
-## 8. Current limitations
+## 8. Hosted public complexity did not beat the simple baseline
+
+The next hosted wave produced the following public scores:
+
+- **ASUB-007:** 82.700;
+- **ASUB-010:** 78.810;
+- an accidental duplicate of the same ASUB-010 notebook version, submitted under an incorrect ASUB-007 description: 81.920;
+- **ASUB-009:** 8.565.
+
+The two ASUB-010 results differ by 3.110 points. This is directionally consistent with the earlier observation that hosted evaluation is noisy, although it should not be combined mechanically with the ASUB-001 spread because the samples are sparse and candidate/runtime conditions differ.
+
+The key negative result is that neither the timeout-prefix public frontier nor the format-diverse public frontier exceeded the best simple ASUB-001 replicate at 86.040. Added selection logic, format diversity, and generation-time calibration therefore did not produce hosted evidence of a better public mechanism in this wave.
+
+This negative result changes the next public experiment. Rather than adding another prompt format, DRAFT-ASUB-020 / frozen ASUB-013 holds the exact successful ASUB-001 FAST_TEMPLATE and URL generator fixed, removes live generation probing, and emits the full 2,000-candidate archive. This is a controlled throughput ablation: the main changed variable is generation overhead, not attack wording.
+
+## 9. Broad private hedging has a severe visible public cost
+
+ASUB-009 scored **8.565** publicly, far below the public-only candidates. This is direct evidence that a broad hedge over semantically different attack families imposes a large cost on the known public score surface.
+
+It is not direct evidence that the same portfolio fails under the hidden private guardrail. The result instead strengthens the case for treating Kaggle's two final submission slots as a complementary portfolio: a public anchor can carry the known public mechanism while a second candidate spends score budget on hidden-defense uncertainty.
+
+ASUB-011 is the cleaner follow-up private experiment because it preserves the same broad hypothesis portfolio while improving early lane coverage from 4/6 to 6/6 in the first six replay positions. Its hosted public score remains pending at the time of this insert.
+
+## 10. Baseline-exact full-prefix throughput ablation
+
+DRAFT-ASUB-020 was validated mechanically and through the official SDK before being frozen byte-identically as ASUB-013. It preserves the exact ASUB-001 fast prompt and destination generator but removes the live warm-up/probe loop and returns the legal maximum of 2,000 candidates immediately.
+
+This experiment is intentionally narrow. If ASUB-013 materially exceeds the ASUB-001 hosted region, the result supports the interpretation that generation-time calibration overhead, rather than insufficient archive depth, was limiting the simple public mechanism. If it remains inside the observed ASUB-001 duplicate range or regresses, then full-prefix static emission alone is not enough to move the public frontier.
+
+The 8.190-point ASUB-001 duplicate range is used only as an operational comparison band. In particular, a single ASUB-013 score above **94.230** would exceed the current 86.040 anchor by more than the entire observed identical-run range and would therefore be substantially stronger evidence of public improvement than a one- or two-point gain.
+
+## 11. Current limitations
 
 - Public scores do not expose the hidden private-defense survival of each mechanism.
 - Two byte-identical hosted replicas provide useful operational evidence of noise but are insufficient for formal variance estimation.
@@ -72,15 +103,15 @@ Kaggle allows two final selected submissions. We therefore model selection as a 
 - Coverage metrics measure diversity of tested hypotheses, not security impact or final leaderboard score.
 - Hierarchical calibration is a budget-allocation hypothesis until hosted evidence shows generation truncation or a score difference beyond ordinary run variance.
 - Public model-format behavior may change with evaluator revisions; the interface-only control is retained specifically to test dependence on those assumptions.
+- ASUB-009's low public score cannot by itself establish private value; final private behavior remains unobserved until Kaggle's hidden evaluation.
+- ASUB-007/010 negative public results establish that those specific added mechanisms failed to improve this hosted wave, not that all richer strategies are intrinsically worse.
 
 ## Pending inserts
 
-When the current hosted wave finishes, insert:
+Before final Working Note submission, insert:
 
-- ASUB-009 public score and interpretation as a private-aware hedge;
-- both ASUB-010 replicate scores and their strategy-specific spread;
-- ASUB-007 public score;
-- pairwise comparison using the empirical-noise decision helper;
-- whether ASUB-011 and/or ASUB-012 were then promoted to hosted evaluation;
-- whether DRAFT-ASUB-019 earned promotion based on hosted evidence of generation truncation/order sensitivity;
-- final two selected submissions and rationale.
+- ASUB-011 terminal public score and interpretation;
+- ASUB-013 terminal public score and comparison against the 77.850–86.040 ASUB-001 replicate region;
+- whether ASUB-012 and/or DRAFT-ASUB-019 earned hosted slots after those results;
+- final two selected submissions and scenario-based rationale;
+- final leaderboard/private outcome if available before the Working Note deadline.
