@@ -263,12 +263,22 @@ def _harmony_unlocked(
     harmony = tuple(harmony)
     if len(plain) < HARMONY_CONFIRMATIONS or len(harmony) < HARMONY_CONFIRMATIONS:
         return False
-    if any(obs.hits <= 0 for obs in harmony):
-        return False
+
     plain_density = _arm_density(plain)
     harmony_density = _arm_density(harmony)
+
+    # Dominance escape hatch: when the direct anchor produced zero score across
+    # the complete calibration but Harmony produced any positive score, rejecting
+    # Harmony merely because one Harmony repetition flaked would choose a measured
+    # zero-value arm over a measured positive-value arm.  That is never rational.
     if plain_density <= 0.0:
         return harmony_density > 0.0
+
+    # When the direct arm itself is viable, keep the conservative reliability gate
+    # used by V13: Harmony must fire on all three paired confirmations and deliver
+    # a material aggregate density advantage before specialization is unlocked.
+    if any(obs.hits <= 0 for obs in harmony):
+        return False
     return harmony_density >= plain_density * HARMONY_PROMOTION_MARGIN
 
 
@@ -507,7 +517,13 @@ class AttackAlgorithm(AttackAlgorithmBase):
             failure_streak += 1
             if failure_streak >= FAILOVER_STREAK:
                 fallback = _fallback_arm(selected_arm, harmony_proven)
-                if fallback is not None and fallback != selected_arm:
+                if fallback is None:
+                    # The absorbing legacy arm is already our safest known direct
+                    # primitive.  If it also fails repeatedly there is no rational
+                    # arm left to explore; return the accumulated positive prefix
+                    # instead of burning the remaining attack-generation budget.
+                    break
+                if fallback != selected_arm:
                     selected_arm = fallback
                     failure_streak = 0
                     if selected_arm in ("fast-single", "legacy-single"):
