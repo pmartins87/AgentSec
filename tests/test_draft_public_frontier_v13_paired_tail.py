@@ -78,6 +78,25 @@ def test_paired_harmony_gate_requires_three_equal_confirmations() -> None:
     assert not module._harmony_unlocked(plain, harmony_flaky)
 
 
+def test_positive_harmony_dominates_zero_direct_even_if_flaky() -> None:
+    module = _load()
+    direct_zero = [
+        module._VerifiedCandidate(f"p{i}", latency=5.0, hits=0, arm="fast-single")
+        for i in range(3)
+    ]
+    harmony_some = [
+        module._VerifiedCandidate("h0", latency=4.0, hits=1, arm="harmony-single"),
+        module._VerifiedCandidate("h1", latency=4.0, hits=0, arm="harmony-single"),
+        module._VerifiedCandidate("h2", latency=4.0, hits=0, arm="harmony-single"),
+    ]
+    harmony_zero = [
+        module._VerifiedCandidate(f"z{i}", latency=4.0, hits=0, arm="harmony-single")
+        for i in range(3)
+    ]
+    assert module._harmony_unlocked(direct_zero, harmony_some)
+    assert not module._harmony_unlocked(direct_zero, harmony_zero)
+
+
 def test_multipost_gate_uses_nearby_harmony_controls() -> None:
     module = _load()
     controls = [
@@ -119,6 +138,44 @@ def test_fallback_chain_ends_at_project_proven_legacy_anchor() -> None:
     assert module.LEGACY_FAST_TEMPLATE.split("{url}")[0] in module._message_for_arm("legacy-single", 1)
 
 
+def test_terminal_legacy_failures_stop_instead_of_burning_budget(monkeypatch) -> None:
+    module = _load()
+    calls: list[str] = []
+
+    class Env:
+        def reset(self):
+            return None
+
+        def interact(self, *_args, **_kwargs):
+            return None
+
+    class Config:
+        time_budget_s = 1_000.0
+        max_tool_hops = 4
+        max_steps = 100
+
+    per_arm_count: dict[str, int] = {}
+
+    def fake_probe(_env, message, _hops, arm):
+        calls.append(arm)
+        per_arm_count[arm] = per_arm_count.get(arm, 0) + 1
+        # Calibration: direct succeeds three times, Harmony fails three times.
+        # Fill: direct then fails twice -> legacy; legacy fails twice -> terminal break.
+        if arm == "fast-single" and per_arm_count[arm] <= 3:
+            hits = 1
+        else:
+            hits = 0
+        return module._VerifiedCandidate(message, latency=1.0, hits=hits, arm=arm)
+
+    monkeypatch.setattr(module, "_probe", fake_probe)
+    result = module.AttackAlgorithm().run(Env(), Config())
+    assert result
+    assert per_arm_count.get("fast-single") == 5
+    assert per_arm_count.get("harmony-single") == 3
+    assert per_arm_count.get("legacy-single") == 2
+    assert len(calls) == 10
+
+
 def test_non_harmony_run_never_explores_multipost_and_adds_tail(monkeypatch) -> None:
     module = _load()
     calls: list[tuple[str, str]] = []
@@ -149,8 +206,6 @@ def test_non_harmony_run_never_explores_multipost_and_adds_tail(monkeypatch) -> 
     result = module.AttackAlgorithm().run(Env(), Config())
     assert result
     assert not any(arm.startswith("multi") for arm, _ in calls)
-    # Six calibration probes + two exploit probes produce five successful direct
-    # observations; then the extreme tail is opportunistically appended.
     assert len(result) >= 5 + module.TAIL_BACKFILL_N
     assert all(len(candidate.user_messages) == 1 for candidate in result)
 
@@ -208,8 +263,6 @@ def test_salvage_is_after_selected_prefix_and_unvalidated_tail_is_plain(monkeypa
         max_steps = 6
 
     def fake_probe(_env, message, _hops, arm):
-        # Direct wins. Harmony still fires, so its successful calibration probes
-        # are salvaged behind the selected direct prefix rather than discarded.
         latency = 1.0 if arm == "fast-single" else 2.0
         return module._VerifiedCandidate(message, latency=latency, hits=1, arm=arm)
 
