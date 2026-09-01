@@ -82,6 +82,20 @@ def test_multipost_gate_uses_nearby_harmony_controls() -> None:
     assert not module._multipost_unlocked(controls, incomplete, min_hits=4)
 
 
+def test_partial_multipost_is_scoreable_but_not_arm_healthy() -> None:
+    module = _load()
+    partial = module._VerifiedCandidate("m", latency=10.0, hits=3, arm="multi5")
+    zero = module._VerifiedCandidate("z", latency=10.0, hits=0, arm="multi5")
+    full = module._VerifiedCandidate("f", latency=10.0, hits=4, arm="multi5")
+
+    assert module._scoreable(partial)
+    assert not module._arm_healthy(partial, 4)
+    assert not module._scoreable(zero)
+    assert not module._arm_healthy(zero, 4)
+    assert module._scoreable(full)
+    assert module._arm_healthy(full, 4)
+
+
 def test_non_harmony_run_never_explores_multipost_and_adds_tail(monkeypatch) -> None:
     module = _load()
     calls: list[tuple[str, str]] = []
