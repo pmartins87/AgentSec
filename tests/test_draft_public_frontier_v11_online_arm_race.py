@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 
 
@@ -10,9 +11,14 @@ ASUB001 = ROOT / "submissions" / "ASUB-20260825-001-frontier-canary" / "attack.p
 
 
 def _load():
-    spec = importlib.util.spec_from_file_location("draft_asub022", DRAFT)
+    module_name = "draft_asub022"
+    spec = importlib.util.spec_from_file_location(module_name, DRAFT)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
+    # dataclasses with postponed annotations resolve their defining module via
+    # sys.modules on Python 3.11. Register the import exactly as a normal import
+    # would before executing it.
+    sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
 
