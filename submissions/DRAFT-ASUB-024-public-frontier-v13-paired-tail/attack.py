@@ -15,7 +15,10 @@ V13 keeps the proven V12 core and changes only low-regret mechanics:
    prefix, but are salvaged after the selected-arm prefix.  With the current
    evaluator preserving partial replay score on replay timeout, this can only
    help if replay reaches the tail while leaving the strong prefix untouched.
-5. Up to 32 unvalidated *plain ASUB-001-style* candidates are appended at the
+5. Partially successful multipost candidates are retained for their positive
+   score but still count against arm health, separating scoring eligibility
+   from the stricter promotion/circuit-breaker threshold.
+6. Up to 32 unvalidated *plain ASUB-001-style* candidates are appended at the
    extreme tail.  They never displace live-verified candidates and use the
    most stable one-message primitive rather than a fragile Harmony/multipost
    shape.  This recovers otherwise-idle replay capacity without changing the
@@ -219,7 +222,13 @@ def _arm_density(observations: Iterable[_VerifiedCandidate]) -> float:
     return sum(obs.raw_proxy for obs in observations) / total_latency
 
 
-def _eligible(obs: _VerifiedCandidate, multi_min_hits: int) -> bool:
+def _scoreable(obs: _VerifiedCandidate) -> bool:
+    """Whether replaying this observed candidate has positive public value."""
+    return obs.hits > 0
+
+
+def _arm_healthy(obs: _VerifiedCandidate, multi_min_hits: int) -> bool:
+    """Stricter reliability threshold used only for arm control decisions."""
     if obs.arm.startswith("multi"):
         return obs.hits >= int(multi_min_hits)
     return obs.hits > 0
@@ -444,7 +453,7 @@ class AttackAlgorithm(AttackAlgorithmBase):
         selected_probes = [
             obs
             for obs in observations
-            if obs.arm == selected_arm and _eligible(obs, multi_min_hits)
+            if obs.arm == selected_arm and _scoreable(obs)
         ]
         verified.extend(selected_probes)
 
@@ -452,6 +461,9 @@ class AttackAlgorithm(AttackAlgorithmBase):
         failure_streak = 0
 
         # 3) Exploit selected arm with the V12 two-failure circuit breaker.
+        # Positive partial multiposts are kept for score even when they fail the
+        # stricter arm-health floor; this avoids throwing away 18/34/50 raw-value
+        # findings merely because the arm is starting to degrade.
         while len(verified) < hard_cap and steps < max_steps:
             if not can_probe():
                 break
@@ -463,8 +475,10 @@ class AttackAlgorithm(AttackAlgorithmBase):
             steps += 1
             slowest = max(slowest, obs.latency)
 
-            if _eligible(obs, multi_min_hits):
+            if _scoreable(obs):
                 verified.append(obs)
+
+            if _arm_healthy(obs, multi_min_hits):
                 failure_streak = 0
                 continue
 
@@ -496,14 +510,15 @@ class AttackAlgorithm(AttackAlgorithmBase):
         ordered: list[_VerifiedCandidate] = list(verified[:hard_cap])
         seen = {item.message for item in ordered}
 
-        # 5) Replay-safe salvage tail: successful probes from losing arms are
-        # validated information we already paid to obtain.  Put them only after
-        # the main prefix so they can add score if replay has capacity without
-        # displacing a selected-arm candidate.
+        # 5) Replay-safe salvage tail: every positive losing-arm probe is
+        # validated information we already paid to obtain.  Put it only after the
+        # main prefix so it can add score if replay has capacity without displacing
+        # a selected-arm candidate.  Partial multiposts are positive and belong
+        # here even if they were below the promotion reliability threshold.
         salvage = [
             obs
             for obs in observations
-            if _eligible(obs, multi_min_hits) and obs.message not in seen
+            if _scoreable(obs) and obs.message not in seen
         ]
         salvage.sort(
             key=lambda item: (
